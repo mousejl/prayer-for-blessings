@@ -817,252 +817,27 @@ const musicTracks={
   compassion:{name:'大悲咒',desc:'千手千眼，大悲心陀罗尼'},
   mantra:{name:'六字明咒',desc:'唵嘛呢叭咪吽'}
 };
-let musicPlaying=false, currentTrack='heart', musicGain=null, musicNodes=[], musicTimers=[];
+let musicPlaying=false, currentTrack='heart', audioEl=null;
 
-// ===== 共振峰诵经合成引擎 =====
-// 模拟僧人低沉吟唱：基频 + 多个共振峰振荡器（模拟 a/i/u/e/o 元音）+ 缓慢元音切换
-// 元音共振峰参数 [F1, F2, F3]
-const vowelFormants={
-  a:[800,1200,2800],
-  i:[300,2500,3300],
-  u:[350,700,2500],
-  e:[500,2300,3000],
-  o:[500,900,2500],
-  m:[250,1000,2200], // 鼻音 m/n
-  n:[250,1400,2600], // 鼻音
+// 音频文件路径映射
+const audioFiles={
+  heart:'audio/heart_loop.wav',
+  compassion:'audio/compassion_loop.wav',
+  mantra:'audio/mantra_loop.wav'
 };
-
-// 诵经音节序列（元音代表吟唱走势）
-const sutraSequences={
-  // 心经：缓慢庄严的吟诵
-  heart:['a','e','i','u','o','m','a','n','o','a','i','u','e','o','m','a','e','i','o','u','n','a','o','m','e','i','a','u'],
-  // 大悲咒：较快密集的咒语吟诵
-  compassion:['a','o','m','i','n','a','u','e','o','a','i','m','u','n','e','a','o','i','u','m','a','e','n','o','i','a','u','m','e','o','n','a','i'],
-  // 六字明咒：唵嘛呢叭咪吽 对应 o-m-a-n-i-u 循环
-  mantra:['o','m','a','n','i','u','o','m','a','n','i','u','o','m','a','n','i','u']
-};
-
-// 创建一个共振峰吟唱音（持续drone + 共振峰带通滤波器切换）
-function createChantVoice(ctx,master,baseFreq,vol){
-  const nodes=[];
-  // 声源：锯齿波（丰富谐波，类似声带振动）
-  const source=ctx.createOscillator();
-  source.type='sawtooth';
-  source.frequency.value=baseFreq;
-  const sourceG=ctx.createGain();
-  sourceG.gain.value=0.12*vol;
-  source.connect(sourceG);
-  nodes.push(source,sourceG);
-
-  // 共振峰滤波器组（3个带通滤波器模拟F1/F2/F3）
-  const formantFilters=[];
-  for(let i=0;i<3;i++){
-    const bp=ctx.createBiquadFilter();
-    bp.type='bandpass';
-    bp.Q.value=5+i*3;
-    formantFilters.push(bp);
-    const fG=ctx.createGain();
-    fG.gain.value=0.8-i*0.15;
-    sourceG.connect(bp);
-    bp.connect(fG);
-    fG.connect(master);
-    nodes.push(bp,fG);
-  }
-
-  // 第二声部：低八度和声
-  const source2=ctx.createOscillator();
-  source2.type='sawtooth';
-  source2.frequency.value=baseFreq*0.5;
-  const source2G=ctx.createGain();
-  source2G.gain.value=0.06*vol;
-  source2.connect(source2G);
-  source2G.connect(master);
-  source2.start();
-  nodes.push(source2,source2G);
-
-  // 颤音（模拟人声自然颤音）
-  const vibrato=ctx.createOscillator();
-  const vibG=ctx.createGain();
-  vibrato.type='sine';vibrato.frequency.value=5.5;
-  vibG.gain.value=2;
-  vibrato.connect(vibG);vibG.connect(source.frequency);
-  vibrato.start();
-  nodes.push(vibrato,vibG);
-
-  source.start();
-
-  // 返回控制接口
-  nodes.formantFilters=formantFilters;
-  return nodes;
-}
-
-// 切换共振峰（模拟元音切换）
-function setVowel(filters,vowelKey,ctx,time){
-  const v=vowelFormants[vowelKey]||vowelFormants.a;
-  const t=time||ctx.currentTime;
-  const dur=0.3; // 元音切换过渡时间
-  filters.forEach((f,i)=>{
-    f.frequency.linearRampToValueAtTime(v[i],t+dur);
-  });
-}
-
-// Om drone 底层
-function createOmDrone(ctx,master,freq,vol){
-  const nodes=[];
-  const osc=ctx.createOscillator();const g=ctx.createGain();
-  osc.type='sine';osc.frequency.value=freq;
-  g.gain.value=vol;
-  osc.connect(g);g.connect(master);osc.start();
-  nodes.push(osc,g);
-  const osc5=ctx.createOscillator();const g5=ctx.createGain();
-  osc5.type='sine';osc5.frequency.value=freq*1.5;
-  g5.gain.value=vol*0.4;
-  osc5.connect(g5);g5.connect(master);osc5.start();
-  nodes.push(osc5,g5);
-  const lfo=ctx.createOscillator();const lfoG=ctx.createGain();
-  lfo.type='sine';lfo.frequency.value=0.07;
-  lfoG.gain.value=1.5;
-  lfo.connect(lfoG);lfoG.connect(osc.frequency);lfo.start();
-  nodes.push(lfo,lfoG);
-  return nodes;
-}
-
-// 节拍器
-function scheduleBeep(ctx,master,interval,handler){
-  function tick(){
-    if(!musicPlaying)return;
-    handler(ctx,master);
-    const id=setTimeout(tick,interval());
-    musicTimers.push(id);
-  }
-  tick();
-}
-
-// 木鱼
-function woodFish(c,m,freq,dur,vol){
-  const t=c.currentTime;
-  const osc=c.createOscillator();const g=c.createGain();
-  osc.type='square';
-  osc.frequency.setValueAtTime(freq,t);
-  osc.frequency.exponentialRampToValueAtTime(freq*0.25,t+dur);
-  g.gain.setValueAtTime(vol,t);
-  g.gain.exponentialRampToValueAtTime(0.001,t+dur*2);
-  osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+dur*2);
-}
-
-// 引磬
-function qingYin(c,m,freq,vol){
-  const t=c.currentTime;
-  const osc=c.createOscillator();const g=c.createGain();
-  osc.type='sine';
-  osc.frequency.setValueAtTime(freq,t);
-  osc.frequency.exponentialRampToValueAtTime(freq*0.97,t+4);
-  g.gain.setValueAtTime(vol,t);
-  g.gain.exponentialRampToValueAtTime(0.001,t+4);
-  osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+4);
-}
-
-// ===== 诵经调度 =====
-let chantVoiceNodes=null;
-let chantSyllIdx=0;
-
-function startChantLoop(ctx,master,track){
-  const seq=sutraSequences[track];
-  if(!seq)return[];
-  chantSyllIdx=0;
-  const baseFreq=track==='heart'?110:track==='compassion'?98:130;
-  const voiceNodes=createChantVoice(ctx,master,baseFreq,1.0);
-  chantVoiceNodes=voiceNodes;
-
-  // 元音切换调度
-  const syllInterval=track==='mantra'?1200:track==='compassion'?900:1400;
-  function nextSyllable(){
-    if(!musicPlaying||currentTrack!==track)return;
-    const vowel=seq[chantSyllIdx%seq.length];
-    setVowel(chantVoiceNodes.formantFilters,vowel,ctx);
-    chantSyllIdx++;
-    const id=setTimeout(nextSyllable,syllInterval+Math.random()*400);
-    musicTimers.push(id);
-  }
-  const id=setTimeout(nextSyllable,800);
-  musicTimers.push(id);
-  return voiceNodes;
-}
-
-// ===== 曲目1：心经 =====
-function playHeart(ctx,master){
-  const nodes=[];
-  nodes.push(...createOmDrone(ctx,master,65.41,0.07));
-  // 木鱼：每2.5-3.5秒
-  scheduleBeep(ctx,master,()=>2500+Math.random()*1000,(c,m)=>{
-    if(currentTrack==='heart')woodFish(c,m,800,0.04,0.06);
-  });
-  // 引磬
-  scheduleBeep(ctx,master,()=>20000+Math.random()*10000,(c,m)=>{
-    if(currentTrack==='heart')qingYin(c,m,2093,0.025);
-  });
-  // 诵经声（共振峰吟唱）
-  nodes.push(...startChantLoop(ctx,master,'heart'));
-  return nodes;
-}
-
-// ===== 曲目2：大悲咒 =====
-function playCompassion(ctx,master){
-  const nodes=[];
-  nodes.push(...createOmDrone(ctx,master,55,0.08));
-  // 密集木鱼
-  scheduleBeep(ctx,master,()=>1200+Math.random()*600,(c,m)=>{
-    if(currentTrack==='compassion')woodFish(c,m,900,0.03,0.05);
-  });
-  // 大鼓
-  scheduleBeep(ctx,master,()=>8000+Math.random()*4000,(c,m)=>{
-    if(currentTrack!=='compassion')return;
-    const t=c.currentTime;
-    const osc=c.createOscillator();const g=c.createGain();
-    osc.type='sine';osc.frequency.setValueAtTime(80,t);
-    osc.frequency.exponentialRampToValueAtTime(40,t+0.5);
-    g.gain.setValueAtTime(0.06,t);g.gain.exponentialRampToValueAtTime(0.001,t+1.5);
-    osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+1.5);
-  });
-  nodes.push(...startChantLoop(ctx,master,'compassion'));
-  return nodes;
-}
-
-// ===== 曲目3：六字明咒 =====
-function playMantra(ctx,master){
-  const nodes=[];
-  nodes.push(...createOmDrone(ctx,master,87.31,0.07));
-  // 木鱼
-  scheduleBeep(ctx,master,()=>1500+Math.random()*500,(c,m)=>{
-    if(currentTrack==='mantra')woodFish(c,m,700,0.04,0.05);
-  });
-  // 引磬
-  scheduleBeep(ctx,master,()=>25000+Math.random()*15000,(c,m)=>{
-    if(currentTrack==='mantra')qingYin(c,m,2349,0.02);
-  });
-  nodes.push(...startChantLoop(ctx,master,'mantra'));
-  return nodes;
-}
 
 function startMusic(){
   if(musicPlaying)return;
   const ctx=getAudio();
   if(ctx.state==='suspended')ctx.resume();
 
-  musicGain=ctx.createGain();
-  const vol=document.getElementById('musicVol').value/100;
-  musicGain.gain.value=vol*0.6;
-  musicGain.connect(ctx.destination);
+  // 创建 <audio> 元素播放预录音频
+  audioEl=new Audio(audioFiles[currentTrack]);
+  audioEl.loop=true;
+  audioEl.volume=document.getElementById('musicVol').value/100;
+  audioEl.play().catch(()=>{});
 
-  musicTimers=[];
-  chantVoiceNodes=null;
-  chantSyllIdx=0;
   musicPlaying=true;
-
-  if(currentTrack==='heart')musicNodes=playHeart(ctx,musicGain);
-  else if(currentTrack==='compassion')musicNodes=playCompassion(ctx,musicGain);
-  else if(currentTrack==='mantra')musicNodes=playMantra(ctx,musicGain);
-
   document.getElementById('musicToggle').classList.add('playing');
   document.getElementById('musicToggle').innerHTML='&#9646;&#9646;';
   const d=gd();d.musicOn=true;d.musicTrack=currentTrack;sd(d);
@@ -1070,11 +845,7 @@ function startMusic(){
 
 function stopMusic(){
   if(!musicPlaying)return;
-  musicTimers.forEach(id=>clearTimeout(id));musicTimers=[];
-  musicNodes.forEach(n=>{try{if(n.stop)n.stop();n.disconnect()}catch(e){}});
-  musicNodes=[];
-  chantVoiceNodes=null;
-  if(musicGain){try{musicGain.disconnect()}catch(e){}}
+  if(audioEl){audioEl.pause();audioEl.src='';audioEl=null}
   musicPlaying=false;
   document.getElementById('musicToggle').classList.remove('playing');
   document.getElementById('musicToggle').innerHTML='&#9654;';
@@ -1093,7 +864,7 @@ function selectTrack(track){
 }
 
 function setMusicVol(v){
-  if(musicGain)musicGain.gain.value=(v/100)*0.6;
+  if(audioEl)audioEl.volume=v/100;
   const d=gd();d.musicVol=v;sd(d);
 }
 
