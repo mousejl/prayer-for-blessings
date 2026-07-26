@@ -850,7 +850,7 @@ function createChantVoice(ctx,master,baseFreq,vol){
   source.type='sawtooth';
   source.frequency.value=baseFreq;
   const sourceG=ctx.createGain();
-  sourceG.gain.value=0.04*vol;
+  sourceG.gain.value=0.12*vol;
   source.connect(sourceG);
   nodes.push(source,sourceG);
 
@@ -859,10 +859,10 @@ function createChantVoice(ctx,master,baseFreq,vol){
   for(let i=0;i<3;i++){
     const bp=ctx.createBiquadFilter();
     bp.type='bandpass';
-    bp.Q.value=8+i*4; // Q值递增，高频共振峰更窄
+    bp.Q.value=5+i*3;
     formantFilters.push(bp);
     const fG=ctx.createGain();
-    fG.gain.value=0.6-i*0.15; // 高频共振峰音量递减
+    fG.gain.value=0.8-i*0.15;
     sourceG.connect(bp);
     bp.connect(fG);
     fG.connect(master);
@@ -874,7 +874,7 @@ function createChantVoice(ctx,master,baseFreq,vol){
   source2.type='sawtooth';
   source2.frequency.value=baseFreq*0.5;
   const source2G=ctx.createGain();
-  source2G.gain.value=0.02*vol;
+  source2G.gain.value=0.06*vol;
   source2.connect(source2G);
   source2G.connect(master);
   source2.start();
@@ -968,13 +968,11 @@ let chantSyllIdx=0;
 
 function startChantLoop(ctx,master,track){
   const seq=sutraSequences[track];
-  if(!seq)return;
+  if(!seq)return[];
   chantSyllIdx=0;
-  // 基频根据曲目调整
   const baseFreq=track==='heart'?110:track==='compassion'?98:130;
-  // 创建共振峰诵经声
-  chantVoiceNodes=createChantVoice(ctx,master,baseFreq,1.0);
-  musicNodes.push(...chantVoiceNodes);
+  const voiceNodes=createChantVoice(ctx,master,baseFreq,1.0);
+  chantVoiceNodes=voiceNodes;
 
   // 元音切换调度
   const syllInterval=track==='mantra'?1200:track==='compassion'?900:1400;
@@ -986,9 +984,9 @@ function startChantLoop(ctx,master,track){
     const id=setTimeout(nextSyllable,syllInterval+Math.random()*400);
     musicTimers.push(id);
   }
-  // 稍等一下再开始吟唱，让drone先铺好
   const id=setTimeout(nextSyllable,800);
   musicTimers.push(id);
+  return voiceNodes;
 }
 
 // ===== 曲目1：心经 =====
@@ -1003,8 +1001,8 @@ function playHeart(ctx,master){
   scheduleBeep(ctx,master,()=>20000+Math.random()*10000,(c,m)=>{
     if(currentTrack==='heart')qingYin(c,m,2093,0.025);
   });
-  // 诵经声
-  startChantLoop(ctx,master,'heart');
+  // 诵经声（共振峰吟唱）
+  nodes.push(...startChantLoop(ctx,master,'heart'));
   return nodes;
 }
 
@@ -1026,7 +1024,7 @@ function playCompassion(ctx,master){
     g.gain.setValueAtTime(0.06,t);g.gain.exponentialRampToValueAtTime(0.001,t+1.5);
     osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+1.5);
   });
-  startChantLoop(ctx,master,'compassion');
+  nodes.push(...startChantLoop(ctx,master,'compassion'));
   return nodes;
 }
 
@@ -1042,148 +1040,7 @@ function playMantra(ctx,master){
   scheduleBeep(ctx,master,()=>25000+Math.random()*15000,(c,m)=>{
     if(currentTrack==='mantra')qingYin(c,m,2349,0.02);
   });
-  startChantLoop(ctx,master,'mantra');
-  return nodes;
-}
-
-function speakSutra(track){
-  if(!musicPlaying)return;
-  const text=sutraTexts[track];
-  if(!text||!text.length)return;
-
-  speechSynthesis.cancel();
-  const voice=getZhVoice();
-  let idx=0;
-
-  function speakNext(){
-    if(!musicPlaying||currentTrack!==track)return;
-    if(idx>=text.length){
-      // 一轮念完，短暂停顿后循环
-      idx=0;
-      const id=setTimeout(()=>speakNext(),track==='mantra'?1500:3000);
-      musicTimers.push(id);
-      return;
-    }
-    const utt=new SpeechSynthesisUtterance(text[idx]);
-    utt.lang='zh-CN';
-    utt.rate=track==='mantra'?0.65:track==='compassion'?0.7:0.75;
-    utt.pitch=track==='mantra'?0.8:0.9;
-    utt.volume=document.getElementById('musicVol').value/100;
-    if(voice)utt.voice=voice;
-    utt.onend=()=>{
-      idx++;
-      const id=setTimeout(()=>speakNext(),track==='mantra'?300:600);
-      musicTimers.push(id);
-    };
-    speechUtterance=utt;
-    speechSynthesis.speak(utt);
-  }
-  speakNext();
-}
-
-// ===== Web Audio 背景音（Om drone + 木鱼） =====
-function createOmDrone(ctx,master,freq,vol){
-  const nodes=[];
-  const osc=ctx.createOscillator();const g=ctx.createGain();
-  osc.type='sine';osc.frequency.value=freq;
-  g.gain.value=vol;
-  osc.connect(g);g.connect(master);osc.start();
-  nodes.push(osc,g);
-  const osc5=ctx.createOscillator();const g5=ctx.createGain();
-  osc5.type='sine';osc5.frequency.value=freq*1.5;
-  g5.gain.value=vol*0.4;
-  osc5.connect(g5);g5.connect(master);osc5.start();
-  nodes.push(osc5,g5);
-  const lfo=ctx.createOscillator();const lfoG=ctx.createGain();
-  lfo.type='sine';lfo.frequency.value=0.07;
-  lfoG.gain.value=1.5;
-  lfo.connect(lfoG);lfoG.connect(osc.frequency);lfo.start();
-  nodes.push(lfo,lfoG);
-  return nodes;
-}
-
-function scheduleBeep(ctx,master,interval,handler){
-  function tick(){
-    if(!musicPlaying)return;
-    handler(ctx,master);
-    const id=setTimeout(tick,interval());
-    musicTimers.push(id);
-  }
-  tick();
-}
-
-// 木鱼音效（所有曲目共用，节奏不同）
-function woodFish(c,m,freq,dur,vol){
-  const t=c.currentTime;
-  const osc=c.createOscillator();const g=c.createGain();
-  osc.type='square';
-  osc.frequency.setValueAtTime(freq,t);
-  osc.frequency.exponentialRampToValueAtTime(freq*0.25,t+dur);
-  g.gain.setValueAtTime(vol,t);
-  g.gain.exponentialRampToValueAtTime(0.001,t+dur*2);
-  osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+dur*2);
-}
-
-// 引磬音效
-function qingYin(c,m,freq,vol){
-  const t=c.currentTime;
-  const osc=c.createOscillator();const g=c.createGain();
-  osc.type='sine';
-  osc.frequency.setValueAtTime(freq,t);
-  osc.frequency.exponentialRampToValueAtTime(freq*0.97,t+4);
-  g.gain.setValueAtTime(vol,t);
-  g.gain.exponentialRampToValueAtTime(0.001,t+4);
-  osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+4);
-}
-
-// 心经：舒缓节奏
-function playHeart(ctx,master){
-  const nodes=[];
-  nodes.push(...createOmDrone(ctx,master,65.41,0.08));
-  // 木鱼：每2.5-3.5秒
-  scheduleBeep(ctx,master,()=>2500+Math.random()*1000,(c,m)=>{
-    if(currentTrack==='heart')woodFish(c,m,800,0.04,0.06);
-  });
-  // 引磬：每20-30秒
-  scheduleBeep(ctx,master,()=>20000+Math.random()*10000,(c,m)=>{
-    if(currentTrack==='heart')qingYin(c,m,2093,0.03);
-  });
-  return nodes;
-}
-
-// 大悲咒：较快节奏
-function playCompassion(ctx,master){
-  const nodes=[];
-  nodes.push(...createOmDrone(ctx,master,55,0.09));
-  // 密集木鱼
-  scheduleBeep(ctx,master,()=>1200+Math.random()*600,(c,m)=>{
-    if(currentTrack==='compassion')woodFish(c,m,900,0.03,0.05);
-  });
-  // 大鼓：每8-12秒
-  scheduleBeep(ctx,master,()=>8000+Math.random()*4000,(c,m)=>{
-    if(currentTrack!=='compassion')return;
-    const t=c.currentTime;
-    const osc=c.createOscillator();const g=c.createGain();
-    osc.type='sine';osc.frequency.setValueAtTime(80,t);
-    osc.frequency.exponentialRampToValueAtTime(40,t+0.5);
-    g.gain.setValueAtTime(0.08,t);g.gain.exponentialRampToValueAtTime(0.001,t+1.5);
-    osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+1.5);
-  });
-  return nodes;
-}
-
-// 六字明咒：中等节奏，重复循环
-function playMantra(ctx,master){
-  const nodes=[];
-  nodes.push(...createOmDrone(ctx,master,87.31,0.08));
-  // 木鱼：每1.5-2秒
-  scheduleBeep(ctx,master,()=>1500+Math.random()*500,(c,m)=>{
-    if(currentTrack==='mantra')woodFish(c,m,700,0.04,0.05);
-  });
-  // 引磬
-  scheduleBeep(ctx,master,()=>25000+Math.random()*15000,(c,m)=>{
-    if(currentTrack==='mantra')qingYin(c,m,2349,0.025);
-  });
+  nodes.push(...startChantLoop(ctx,master,'mantra'));
   return nodes;
 }
 
