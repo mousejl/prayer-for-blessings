@@ -7,6 +7,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>禅心祈福</title>
+<link rel="stylesheet" href="mobile.css">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -186,75 +187,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 .lotus-fx svg{width:140px;height:140px;animation:lotusAnim 1.3s ease-out forwards}
 @keyframes lotusAnim{0%{transform:scale(0) rotate(-30deg);opacity:0}40%{transform:scale(1.1) rotate(5deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:0}}
 
-/* ===== ★ 手机端适配 ★ — 基准布局，禁止修改 ★ ===== */
-@media screen and (max-width:430px){
-  /* 安全区 */
-  .top-area{padding-top:max(24px,env(safe-area-inset-top))}
-  .bottom-area{padding-bottom:max(16px,env(safe-area-inset-bottom))}
-  .festival-bar{padding-top:max(6px,env(safe-area-inset-top));font-size:15px}
-  /* 整体紧凑 */
-  .top-area{padding-bottom:4px}
-  .title{font-size:30px;letter-spacing:8px}
-  .tagline{font-size:15px;margin-top:2px}
-  .ornament{margin-top:4px}
-  /* 佛像/香炉绝对定位，可重叠 */
-  .altar-center{width:100%;height:480px}
-  .buddha-wrap{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
-  .burner-combo{position:absolute;top:234px;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
-  /* 佛像 */
-  .buddha-icon{width:270px;height:405px;margin-bottom:8px}
-  .buddha-light{width:720px;height:720px}
-  /* 香炉 */
-  .burner{width:70px;height:28px}
-  .burner::before{left:6px;right:6px;height:5px;top:-2px}
-  .burner-char{font-size:15px}
-  .stick.lit{height:50px}
-  .sticks-row{height:52px;gap:8px}
-  #smokeCanvas{width:150px;height:280px}
-  /* 供灯环 */
-  .lamp-ring{width:220px;height:55px;margin-top:10px}
-  .mini-lamp{width:14px;height:22px}
-  .mini-lamp .flame{width:7px;height:9px}
-  .mini-lamp .base{width:9px;height:10px}
-  .mini-lamp .glow{top:-6px;left:-7px;width:28px;height:28px}
-  /* 香型间距 */
-  .incense-select{gap:12px}
-  .incense-name{font-size:16px}
-  .incense-dot{width:9px;height:9px}
-  /* 按钮行紧凑 */
-  .main-actions{gap:5px;flex-wrap:nowrap;justify-content:center}
-  .btn-incense{padding:8px 14px;font-size:15px;letter-spacing:2px;white-space:nowrap;flex-shrink:0}
-  .btn-sub{padding:8px 10px;font-size:13px;letter-spacing:1px;white-space:nowrap;flex-shrink:0}
-  .btn-bell{padding:0 8px;height:34px;gap:1px;flex-shrink:0}
-  .btn-bell span:last-child{font-size:11px}
-  /* 底部信息栏 */
-  .info-bar{gap:14px}
-  .info-item{font-size:15px;gap:3px}
-  .info-num{font-size:17px}
-  /* 弹窗内文字 */
-  .modal-heading{font-size:20px;letter-spacing:4px}
-  .modal-btn{font-size:16px}
-  .wish-type-btn{font-size:15px}
-  .wish-textarea{font-size:16px}
-  .buddha-card-name{font-size:16px}
-  .buddha-card-desc{font-size:13px}
-  .wall-type{font-size:14px}
-  .wall-text{font-size:15px}
-  .wall-date{font-size:13px}
-  .fest-tab{font-size:16px}
-  .fest-group-title{font-size:14px}
-  .fest-row-name{font-size:18px}
-  .fest-row-desc{font-size:14px}
-  .fest-row-date{font-size:14px}
-  .share-label{font-size:16px}
-  .share-desc{font-size:13px}
-  .toast{font-size:15px}
-  .music-track{font-size:13px}
-  .music-toggle{width:36px;height:36px;font-size:16px}
-}
-/* ===== ★ 手机端基准锁定 ★ ===== */
-
-/* 小屏兜底（iPhone SE / 320px）— 参考手机端等比缩放 */
+/* ===== 小屏兜底（iPhone SE / 320px）— 参考手机端等比缩放 ===== */
 @media screen and (max-width:360px){
   .title{font-size:26px;letter-spacing:6px}
   .tagline{font-size:14px}
