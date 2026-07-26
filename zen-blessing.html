@@ -672,7 +672,7 @@ function renderLampRing(){
 }
 
 // ===== 许愿 =====
-const wTypes=['家人平安','事业顺利','学业有成','身体健康','姻缘美满','财运亨通'];
+const wTypes=['家人平安','事业顺利','学业有成','身体健康','姻缘美满','财运亨通','众生所愿'];
 let selWType=wTypes[0];
 function initWishTypes(){const g=document.getElementById('wishTypes');wTypes.forEach(t=>{const b=document.createElement('div');b.className='wish-type-btn'+(t===selWType?' sel':'');b.textContent=t;b.onclick=()=>{document.querySelectorAll('.wish-type-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');selWType=t};g.appendChild(b)})}
 function openWishModal(){document.getElementById('wishModal').classList.add('show');document.getElementById('wishInput').value=''}
