@@ -646,7 +646,7 @@ const MAX_S=3;
 function offerIncense(){
   const d=gd();const cur=(d.activeIncense||[]).filter(i=>Date.now()-i.st<i.dur);
   if(cur.length>=MAX_S){toast('香炉已满');return}
-  cur.push({id:Date.now(),type:selInc,st:Date.now(),dur:300000});
+  cur.push({id:Date.now(),type:selInc,st:Date.now(),dur:1800000});
   d.activeIncense=cur;d.totalInc=(d.totalInc||0)+1;sd(d);
   renderSticks();startSmoke();updateInfo();
   chantSound(); // 念经音效
