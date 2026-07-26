@@ -848,7 +848,7 @@ function sharePoster(){
   closeShareModal();
 }
 
-// ===== 背景音乐系统（Web Audio API 合成） =====
+// ===== 背景音乐系统 =====
 const musicTracks={
   heart:{name:'心经',desc:'观自在菩萨，照见五蕴皆空'},
   compassion:{name:'大悲咒',desc:'千手千眼，大悲心陀罗尼'},
@@ -863,6 +863,13 @@ const audioFiles={
   mantra:'audio/mantra_loop.wav?v=3'
 };
 
+// 页面加载时预创建Audio对象，常驻缓存
+const audioPool={};
+Object.keys(audioFiles).forEach(k=>{
+  const a=new Audio();a.preload='auto';a.loop=true;a.src=audioFiles[k];
+  audioPool[k]=a;
+});
+
 function startMusic(){
   if(musicPlaying)return;
   const ctx=getAudio();
@@ -871,37 +878,45 @@ function startMusic(){
   const progCircle=document.querySelector('.music-prog');
   const circumference=2*Math.PI*16; // ≈100.53
 
-  audioEl=new Audio();
-  audioEl.loop=true;
+  // 复用已缓存的Audio对象
+  audioEl=audioPool[currentTrack];
+  audioEl.currentTime=0;
   audioEl.volume=document.getElementById('musicVol').value/100;
-  audioEl.preload='auto';
   musicPlaying=true;
   document.getElementById('musicToggle').classList.add('playing');
   document.querySelector('.music-icon').innerHTML='&#9646;&#9646;';
   const d=gd();d.musicOn=true;d.musicTrack=currentTrack;sd(d);
 
-  audioEl.src=audioFiles[currentTrack];
-
   // 监听缓存进度，更新圆环
-  audioEl.addEventListener('progress',function(){
+  function onProgress(){
     if(audioEl.buffered.length>0){
       const buf=audioEl.buffered.end(audioEl.buffered.length-1);
       const pct=buf/audioEl.duration;
       if(progCircle)progCircle.style.strokeDashoffset=circumference*(1-pct);
     }
-  });
+  }
+  audioEl.addEventListener('progress',onProgress);
 
   audioEl.addEventListener('canplaythrough',function onReady(){
     audioEl.removeEventListener('canplaythrough',onReady);
+    audioEl.removeEventListener('progress',onProgress);
     if(progCircle)progCircle.style.strokeDashoffset='0';
     if(musicPlaying)audioEl.play().catch(()=>{});
   },{once:true});
-  audioEl.load();
+
+  // 已缓存过则直接播放
+  if(audioEl.readyState>=4){
+    audioEl.removeEventListener('progress',onProgress);
+    if(progCircle)progCircle.style.strokeDashoffset='0';
+    audioEl.play().catch(()=>{});
+  }else{
+    audioEl.load();
+  }
 }
 
 function stopMusic(){
   if(!musicPlaying)return;
-  if(audioEl){audioEl.pause();audioEl.src='';audioEl=null}
+  if(audioEl){audioEl.pause()}
   musicPlaying=false;
   document.getElementById('musicToggle').classList.remove('playing');
   document.querySelector('.music-icon').innerHTML='&#9654;';
