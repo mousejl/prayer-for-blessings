@@ -819,11 +819,11 @@ const musicTracks={
 };
 let musicPlaying=false, currentTrack='heart', audioEl=null;
 
-// 音频文件路径映射
+// 音频文件路径映射（加v参数防浏览器缓存）
 const audioFiles={
-  heart:'audio/heart_loop.wav',
-  compassion:'audio/compassion_loop.wav',
-  mantra:'audio/mantra_loop.wav'
+  heart:'audio/heart_loop.wav?v=2',
+  compassion:'audio/compassion_loop.wav?v=2',
+  mantra:'audio/mantra_loop.wav?v=2'
 };
 
 function startMusic(){
