@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '836af1ce-13f9-4d74-aef2-1ad0f73dc3a5'
-  PropagateID: '836af1ce-13f9-4d74-aef2-1ad0f73dc3a5'
-  ReservedCode1: 'e17c0189-66ee-4f90-946f-557186e76cf3'
-  ReservedCode2: 'e17c0189-66ee-4f90-946f-557186e76cf3'
+  ProduceID: 'c3fd8eb0-e458-4687-a7a1-588b17329320'
+  PropagateID: 'c3fd8eb0-e458-4687-a7a1-588b17329320'
+  ReservedCode1: 'f133bc9e-59fc-48dc-a5b3-6985a77a4a18'
+  ReservedCode2: 'f133bc9e-59fc-48dc-a5b3-6985a77a4a18'
 ---
 
 # 禅心祈福 - 布局参数基线
@@ -26,7 +26,21 @@ AIGC:
 | lamp-ring | width:200px, height:50px, margin-top:8px |
 | mini-lamp | width:14px, height:20px |
 
-## 手机端（max-width:430px）
+## 手机端（max-width:430px）— 当前生效
+| 元素 | 参数 |
+|------|------|
+| top-area | padding-bottom:4px |
+| buddha-icon | width:270px, height:405px, margin-bottom:8px |
+| buddha-light | width:720px, height:720px |
+| burner-combo | margin-top:-270px |
+| burner | width:70px, height:28px |
+| stick.lit | height:50px |
+| sticks-row | height:52px, gap:8px |
+| smokeCanvas | width:150px, height:200px, bottom:24px |
+| lamp-ring | width:220px, height:55px, margin-top:10px |
+| mini-lamp | width:14px, height:22px |
+
+## 手机端（max-width:430px）— 原始基线
 | 元素 | 参数 |
 |------|------|
 | top-area | padding-bottom:4px |
