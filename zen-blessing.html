@@ -102,7 +102,10 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 
 /* 音乐控制 */
 .music-bar{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
-.music-toggle{width:28px;height:28px;border-radius:50%;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);color:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;font-size:12px;flex-shrink:0}
+.music-toggle{width:28px;height:28px;border-radius:50%;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);color:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;font-size:12px;flex-shrink:0;position:relative}
+.music-ring{position:absolute;inset:0;width:100%;height:100%}
+.music-prog{transition:stroke-dashoffset .3s ease}
+.music-icon{position:relative;z-index:1}
 .music-toggle:hover{border-color:var(--gold);box-shadow:0 0 10px rgba(201,168,76,0.15)}
 .music-toggle.playing{border-color:var(--gold);background:rgba(201,168,76,0.12);animation:musicPulse 2s ease-in-out infinite}
 @keyframes musicPulse{0%,100%{box-shadow:0 0 0 rgba(201,168,76,0)}50%{box-shadow:0 0 8px rgba(201,168,76,0.2)}}
@@ -453,7 +456,10 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
     </div>
 
     <div class="music-bar">
-      <button class="music-toggle" id="musicToggle" onclick="toggleMusic()" title="背景音乐">&#9654;</button>
+      <button class="music-toggle" id="musicToggle" onclick="toggleMusic()" title="背景音乐">
+        <svg class="music-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="none" stroke="rgba(201,168,76,0.15)" stroke-width="2"/><circle class="music-prog" cx="18" cy="18" r="16" fill="none" stroke="var(--gold)" stroke-width="2" stroke-dasharray="100.53" stroke-dashoffset="100.53" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg>
+        <span class="music-icon">&#9654;</span>
+      </button>
       <div class="music-tracks" id="musicTracks">
         <div class="music-track active" data-track="heart" onclick="selectTrack('heart')">心经</div>
         <div class="music-track" data-track="compassion" onclick="selectTrack('compassion')">大悲咒</div>
@@ -862,19 +868,32 @@ function startMusic(){
   const ctx=getAudio();
   if(ctx.state==='suspended')ctx.resume();
 
-  // 先缓存音频，可播放后再播
+  const progCircle=document.querySelector('.music-prog');
+  const circumference=2*Math.PI*16; // ≈100.53
+
   audioEl=new Audio();
   audioEl.loop=true;
   audioEl.volume=document.getElementById('musicVol').value/100;
   audioEl.preload='auto';
   musicPlaying=true;
   document.getElementById('musicToggle').classList.add('playing');
-  document.getElementById('musicToggle').innerHTML='&#9646;&#9646;';
+  document.querySelector('.music-icon').innerHTML='&#9646;&#9646;';
   const d=gd();d.musicOn=true;d.musicTrack=currentTrack;sd(d);
 
   audioEl.src=audioFiles[currentTrack];
+
+  // 监听缓存进度，更新圆环
+  audioEl.addEventListener('progress',function(){
+    if(audioEl.buffered.length>0){
+      const buf=audioEl.buffered.end(audioEl.buffered.length-1);
+      const pct=buf/audioEl.duration;
+      if(progCircle)progCircle.style.strokeDashoffset=circumference*(1-pct);
+    }
+  });
+
   audioEl.addEventListener('canplaythrough',function onReady(){
     audioEl.removeEventListener('canplaythrough',onReady);
+    if(progCircle)progCircle.style.strokeDashoffset='0';
     if(musicPlaying)audioEl.play().catch(()=>{});
   },{once:true});
   audioEl.load();
@@ -885,7 +904,11 @@ function stopMusic(){
   if(audioEl){audioEl.pause();audioEl.src='';audioEl=null}
   musicPlaying=false;
   document.getElementById('musicToggle').classList.remove('playing');
-  document.getElementById('musicToggle').innerHTML='&#9654;';
+  document.querySelector('.music-icon').innerHTML='&#9654;';
+  // 重置圆环进度
+  const progCircle=document.querySelector('.music-prog');
+  const circumference=2*Math.PI*16;
+  if(progCircle)progCircle.style.strokeDashoffset=circumference;
   const d=gd();d.musicOn=false;sd(d);
 }
 
