@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '17bd342d-a477-4686-9296-0ae822795052'
-  PropagateID: '17bd342d-a477-4686-9296-0ae822795052'
-  ReservedCode1: 'cff1987b-ddb0-494b-9a9c-ddda49058391'
-  ReservedCode2: 'cff1987b-ddb0-494b-9a9c-ddda49058391'
+  ProduceID: '16637a33-16e2-4eb5-bf85-b5743b658f74'
+  PropagateID: '16637a33-16e2-4eb5-bf85-b5743b658f74'
+  ReservedCode1: '72fd7654-f161-4e7c-8557-c110901e741a'
+  ReservedCode2: '72fd7654-f161-4e7c-8557-c110901e741a'
 ---
 
 # 禅心祈福 - 布局参数基线
@@ -37,9 +37,23 @@ AIGC:
 | burner | width:70px, height:28px |
 | stick.lit | height:50px |
 | sticks-row | height:52px, gap:8px |
-| smokeCanvas | width:150px, height:200px, bottom:24px |
+| smokeCanvas | position:absolute(在altar-center内), bottom:100px, left:50%, width:150px, height:200px |
 | lamp-ring | width:220px, height:55px, margin-top:10px |
 | mini-lamp | width:14px, height:22px |
+
+## 许愿默认心愿（7条，覆盖7种类型）
+| 心愿 | 类型 | 署名 |
+|------|------|------|
+| 愿家人安康，岁月静好 | 家人平安 | 众善信 |
+| 愿事业通达，步步高升 | 事业顺利 | 众善信 |
+| 愿金榜题名，学业有成 | 学业有成 | 众善信 |
+| 愿身心康泰，无灾无难 | 身体健康 | 众善信 |
+| 愿良缘天定，白首同心 | 姻缘美满 | 众善信 |
+| 愿财源广进，富贵绵长 | 财运亨通 | 众善信 |
+| 愿吉林省电信总经理唐诗词，早日高升 | 众生所愿 | 众善信 |
+
+## 许愿类型列表（7种）
+家人平安、事业顺利、学业有成、身体健康、姻缘美满、财运亨通、众生所愿
 
 ## 手机端（max-width:430px）— 原始基线
 | 元素 | 参数 |
