@@ -416,9 +416,9 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
     <div class="music-bar">
       <button class="music-toggle" id="musicToggle" onclick="toggleMusic()" title="背景音乐">&#9654;</button>
       <div class="music-tracks" id="musicTracks">
-        <div class="music-track active" data-track="chant" onclick="selectTrack('chant')">禅院梵音</div>
-        <div class="music-track" data-track="stream" onclick="selectTrack('stream')">山涧清泉</div>
-        <div class="music-track" data-track="breeze" onclick="selectTrack('breeze')">空山松风</div>
+        <div class="music-track active" data-track="heart" onclick="selectTrack('heart')">心经</div>
+        <div class="music-track" data-track="compassion" onclick="selectTrack('compassion')">大悲咒</div>
+        <div class="music-track" data-track="mantra" onclick="selectTrack('mantra')">六字明咒</div>
       </div>
       <input type="range" class="music-vol" id="musicVol" min="0" max="100" value="40" oninput="setMusicVol(this.value)" title="音量">
     </div>
@@ -813,13 +813,13 @@ function sharePoster(){
 
 // ===== 背景音乐系统（Web Audio API 合成） =====
 const musicTracks={
-  chant:{name:'禅院梵音',desc:'低频梵唱嗡鸣，如寺院早课'},
-  stream:{name:'山涧清泉',desc:'清脆水滴叮咚，如山泉流石'},
-  breeze:{name:'空山松风',desc:'轻柔风铃拂过，如松间听风'}
+  heart:{name:'心经',desc:'观自在菩萨，照见五蕴皆空'},
+  compassion:{name:'大悲咒',desc:'千手千眼，大悲心陀罗尼'},
+  mantra:{name:'六字明咒',desc:'唵嘛呢叭咪吽'}
 };
-let musicPlaying=false, currentTrack='chant', musicGain=null, musicNodes=[];
+let musicPlaying=false, currentTrack='heart', musicGain=null, musicNodes=[], musicTimers=[];
 
-// 创建噪音缓冲（用于自然音效）
+// 创建噪音缓冲
 function createNoiseBuffer(ctx,duration){
   const len=ctx.sampleRate*duration;
   const buf=ctx.createBuffer(1,len,ctx.sampleRate);
@@ -828,143 +828,245 @@ function createNoiseBuffer(ctx,duration){
   return buf;
 }
 
-// 曲目1：禅院梵音 - Om drone + 和声泛音 + 远处钟声
-function playChant(ctx,master){
+// 通用：Om drone 底层（所有曲目共用）
+function createOmDrone(ctx,master,freq,vol){
   const nodes=[];
-  // 基频 Om drone (C2=65.41Hz)
-  const drone=ctx.createOscillator();const dGain=ctx.createGain();
-  drone.type='sine';drone.frequency.value=65.41;
-  dGain.gain.value=0.12;
-  drone.connect(dGain);dGain.connect(master);drone.start();
-  nodes.push(drone,dGain);
-
-  // 五度泛音 (G2=98Hz)
-  const fifth=ctx.createOscillator();const fGain=ctx.createGain();
-  fifth.type='sine';fifth.frequency.value=98;
-  fGain.gain.value=0.06;
-  fifth.connect(fGain);fGain.connect(master);fifth.start();
-  nodes.push(fifth,fGain);
-
-  // 高八度泛音 (C3=130.81Hz)
-  const oct=ctx.createOscillator();const oGain=ctx.createGain();
-  oct.type='sine';oct.frequency.value=130.81;
-  oGain.gain.value=0.04;
-  oct.connect(oGain);oGain.connect(master);oct.start();
-  nodes.push(oct,oGain);
-
-  // 缓慢LFO调制基频，营造呼吸感
-  const lfo=ctx.createOscillator();const lfoGain=ctx.createGain();
-  lfo.type='sine';lfo.frequency.value=0.08; // 8秒一个周期
-  lfoGain.gain.value=2; // 微调 ±2Hz
-  lfo.connect(lfoGain);lfoGain.connect(drone.frequency);lfo.start();
-  nodes.push(lfo,lfoGain);
-
-  // 远处钟声循环
-  function scheduleBell(){
-    if(!musicPlaying||currentTrack!=='chant')return;
-    const bellOsc=ctx.createOscillator();const bellG=ctx.createGain();
-    const t=ctx.currentTime;
-    bellOsc.type='sine';
-    bellOsc.frequency.setValueAtTime(523.25,t); // C5
-    bellOsc.frequency.exponentialRampToValueAtTime(520,t+6);
-    bellG.gain.setValueAtTime(0.04,t);
-    bellG.gain.exponentialRampToValueAtTime(0.001,t+6);
-    bellOsc.connect(bellG);bellG.connect(master);
-    bellOsc.start(t);bellOsc.stop(t+6);
-    setTimeout(scheduleBell,8000+Math.random()*12000); // 8-20秒一声
-  }
-  scheduleBell();
+  // 主drone
+  const osc=ctx.createOscillator();const g=ctx.createGain();
+  osc.type='sine';osc.frequency.value=freq;
+  g.gain.value=vol;
+  osc.connect(g);g.connect(master);osc.start();
+  nodes.push(osc,g);
+  // 五度泛音
+  const osc5=ctx.createOscillator();const g5=ctx.createGain();
+  osc5.type='sine';osc5.frequency.value=freq*1.5;
+  g5.gain.value=vol*0.5;
+  osc5.connect(g5);g5.connect(master);osc5.start();
+  nodes.push(osc5,g5);
+  // 呼吸LFO
+  const lfo=ctx.createOscillator();const lfoG=ctx.createGain();
+  lfo.type='sine';lfo.frequency.value=0.07;
+  lfoG.gain.value=1.5;
+  lfo.connect(lfoG);lfoG.connect(osc.frequency);lfo.start();
+  nodes.push(lfo,lfoG);
   return nodes;
 }
 
-// 曲目2：山涧清泉 - 水滴声 + 流水白噪音 + 鸟鸣
-function playStream(ctx,master){
-  const nodes=[];
-  // 流水底噪（filtered noise）
-  const noiseBuf=createNoiseBuffer(ctx,4);
-  const noise=ctx.createBufferSource();
-  noise.buffer=noiseBuf;noise.loop=true;
-  const noiseFilter=ctx.createBiquadFilter();
-  noiseFilter.type='bandpass';noiseFilter.frequency.value=2000;noiseFilter.Q.value=0.5;
-  const noiseGain=ctx.createGain();noiseGain.gain.value=0.03;
-  noise.connect(noiseFilter);noiseFilter.connect(noiseGain);noiseGain.connect(master);noise.start();
-  nodes.push(noise,noiseFilter,noiseGain);
-
-  // 水滴叮咚循环
-  function scheduleDrop(){
-    if(!musicPlaying||currentTrack!=='stream')return;
-    const t=ctx.currentTime;
-    // 随机高频短促音模拟水滴
-    const freq=1200+Math.random()*2000;
-    const osc=ctx.createOscillator();const g=ctx.createGain();
-    osc.type='sine';
-    osc.frequency.setValueAtTime(freq,t);
-    osc.frequency.exponentialRampToValueAtTime(freq*0.7,t+0.15);
-    g.gain.setValueAtTime(0.08,t);
-    g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
-    osc.connect(g);g.connect(master);
-    osc.start(t);osc.stop(t+0.3);
-    setTimeout(scheduleDrop,200+Math.random()*800);
+// 通用：木鱼/引磬节拍器
+function scheduleBeep(ctx,master,interval,handler){
+  function tick(){
+    if(!musicPlaying)return;
+    handler(ctx,master);
+    const id=setTimeout(tick,interval());
+    musicTimers.push(id);
   }
-  scheduleDrop();
+  tick();
+}
 
-  // 低频水流衬底
-  const subOsc=ctx.createOscillator();const subG=ctx.createGain();
-  subOsc.type='sine';subOsc.frequency.value=82.41; // E2
-  subG.gain.value=0.04;
-  subOsc.connect(subG);subG.connect(master);subOsc.start();
-  nodes.push(subOsc,subG);
+// ===== 曲目1：心经 =====
+// 风格：深沉Om + 木鱼节拍 + 经文偈颂旋律线 + 引磬点缀
+function playHeart(ctx,master){
+  const nodes=[];
+  // Om drone (C2=65.41)
+  nodes.push(...createOmDrone(ctx,master,65.41,0.1));
+
+  // 木鱼节拍：每2-3秒一击，模拟诵经节奏
+  scheduleBeep(ctx,master,
+    ()=>1800+Math.random()*600,
+    (c,m)=>{
+      if(currentTrack!=='heart')return;
+      const t=c.currentTime;
+      // 木鱼 = 短促高频 click
+      const osc=c.createOscillator();const g=c.createGain();
+      osc.type='square';
+      osc.frequency.setValueAtTime(800,t);
+      osc.frequency.exponentialRampToValueAtTime(200,t+0.04);
+      g.gain.setValueAtTime(0.06,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.08);
+      osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+0.08);
+    }
+  );
+
+  // 经文偈颂旋律：五声音阶缓慢游走，模拟唱诵
+  const pentatonic=[261.63,293.66,329.63,392,440,523.25]; // C4 D4 E4 G4 A4 C5
+  scheduleBeep(ctx,master,
+    ()=>3000+Math.random()*4000,
+    (c,m)=>{
+      if(currentTrack!=='heart')return;
+      const t=c.currentTime;
+      const freq=pentatonic[Math.floor(Math.random()*pentatonic.length)];
+      const osc=c.createOscillator();const g=c.createGain();
+      osc.type='sine';
+      osc.frequency.setValueAtTime(freq,t);
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.04,t+0.8);
+      g.gain.linearRampToValueAtTime(0.03,t+2.5);
+      g.gain.exponentialRampToValueAtTime(0.001,t+4);
+      osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+4);
+    }
+  );
+
+  // 引磬：每15-25秒一响
+  scheduleBeep(ctx,master,
+    ()=>15000+Math.random()*10000,
+    (c,m)=>{
+      if(currentTrack!=='heart')return;
+      const t=c.currentTime;
+      const osc=c.createOscillator();const g=c.createGain();
+      osc.type='sine';
+      osc.frequency.setValueAtTime(2093,t); // C7
+      osc.frequency.exponentialRampToValueAtTime(2000,t+4);
+      g.gain.setValueAtTime(0.035,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+4);
+      osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+4);
+    }
+  );
 
   return nodes;
 }
 
-// 曲目3：空山松风 - 风铃 + 低频风声 + 虫鸣
-function playBreeze(ctx,master){
+// ===== 曲目2：大悲咒 =====
+// 风格：密集木鱼 + 咒语节奏型旋律 + 钟鼓和声 + 更快的念诵感
+function playCompassion(ctx,master){
   const nodes=[];
+  // Om drone (A1=55Hz) 更低沉
+  nodes.push(...createOmDrone(ctx,master,55,0.12));
 
-  // 风声底噪（低频filtered noise）
-  const noiseBuf=createNoiseBuffer(ctx,4);
-  const windNoise=ctx.createBufferSource();
-  windNoise.buffer=noiseBuf;windNoise.loop=true;
-  const windFilter=ctx.createBiquadFilter();
-  windFilter.type='lowpass';windFilter.frequency.value=400;windFilter.Q.value=0.3;
-  const windGain=ctx.createGain();windGain.gain.value=0.035;
-  // 风声起伏LFO
-  const windLfo=ctx.createOscillator();const windLfoG=ctx.createGain();
-  windLfo.type='sine';windLfo.frequency.value=0.05;
-  windLfoG.gain.value=150;
-  windLfo.connect(windLfoG);windLfoG.connect(windFilter.frequency);windLfo.start();
-  windNoise.connect(windFilter);windFilter.connect(windGain);windGain.connect(master);windNoise.start();
-  nodes.push(windNoise,windFilter,windGain,windLfo,windLfoG);
+  // 密集木鱼：每1.2-1.8秒，模拟快节奏念咒
+  scheduleBeep(ctx,master,
+    ()=>1200+Math.random()*600,
+    (c,m)=>{
+      if(currentTrack!=='compassion')return;
+      const t=c.currentTime;
+      const osc=c.createOscillator();const g=c.createGain();
+      osc.type='square';
+      osc.frequency.setValueAtTime(900,t);
+      osc.frequency.exponentialRampToValueAtTime(250,t+0.03);
+      g.gain.setValueAtTime(0.05,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.06);
+      osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+0.06);
+    }
+  );
 
-  // 风铃声循环
-  const chimeFreqs=[1318.51,1567.98,1760,2093,2349.32]; // E6 G6 A6 C7 D7
-  function scheduleChime(){
-    if(!musicPlaying||currentTrack!=='breeze')return;
-    const t=ctx.currentTime;
-    const freq=chimeFreqs[Math.floor(Math.random()*chimeFreqs.length)];
-    const osc=ctx.createOscillator();const g=ctx.createGain();
-    osc.type='sine';
-    osc.frequency.setValueAtTime(freq,t);
-    osc.frequency.exponentialRampToValueAtTime(freq*0.95,t+2);
-    g.gain.setValueAtTime(0.05,t);
-    g.gain.exponentialRampToValueAtTime(0.001,t+2.5);
-    osc.connect(g);g.connect(master);
-    osc.start(t);osc.stop(t+2.5);
-    setTimeout(scheduleChime,1500+Math.random()*4000);
-  }
-  scheduleChime();
+  // 咒语旋律：密集短音符，模拟快速唱诵
+  const mantraNotes=[220,261.63,293.66,329.63,349.23,392,440]; // A3-C4音阶
+  scheduleBeep(ctx,master,
+    ()=>2000+Math.random()*3000,
+    (c,m)=>{
+      if(currentTrack!=='compassion')return;
+      const t=c.currentTime;
+      // 连续2-4个短音符，模拟咒语音节
+      const count=2+Math.floor(Math.random()*3);
+      for(let i=0;i<count;i++){
+        const freq=mantraNotes[Math.floor(Math.random()*mantraNotes.length)];
+        const osc=c.createOscillator();const g=c.createGain();
+        const start=t+i*0.3;
+        osc.type='sine';
+        osc.frequency.setValueAtTime(freq,start);
+        g.gain.setValueAtTime(0.025,start);
+        g.gain.exponentialRampToValueAtTime(0.001,start+0.25);
+        osc.connect(g);g.connect(m);osc.start(start);osc.stop(start+0.25);
+      }
+    }
+  );
 
-  // 禅钟衬底
-  const padOsc=ctx.createOscillator();const padG=ctx.createGain();
-  padOsc.type='sine';padOsc.frequency.value=110; // A2
-  padG.gain.value=0.03;
-  const padLfo=ctx.createOscillator();const padLfoG=ctx.createGain();
-  padLfo.type='sine';padLfo.frequency.value=0.06;
-  padLfoG.gain.value=0.015;
-  padLfo.connect(padLfoG);padLfoG.connect(padG.gain);padLfo.start();
-  padOsc.connect(padG);padG.connect(master);padOsc.start();
-  nodes.push(padOsc,padG,padLfo,padLfoG);
+  // 大鼓：每8-12秒一击
+  scheduleBeep(ctx,master,
+    ()=>8000+Math.random()*4000,
+    (c,m)=>{
+      if(currentTrack!=='compassion')return;
+      const t=c.currentTime;
+      const osc=c.createOscillator();const g=c.createGain();
+      osc.type='sine';
+      osc.frequency.setValueAtTime(80,t);
+      osc.frequency.exponentialRampToValueAtTime(40,t+0.5);
+      g.gain.setValueAtTime(0.1,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+1.5);
+      osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+1.5);
+    }
+  );
+
+  return nodes;
+}
+
+// ===== 曲目3：六字大明咒 =====
+// 风格：持续Om + 六字循环吟唱旋律 + 引磬回响 + 空灵泛音
+function playMantra(ctx,master){
+  const nodes=[];
+  // Om drone (F2=87.31)
+  nodes.push(...createOmDrone(ctx,master,87.31,0.1));
+
+  // 高八度泛音层（空灵感）
+  const shimmer=ctx.createOscillator();const shimG=ctx.createGain();
+  shimmer.type='sine';shimmer.frequency.value=523.25; // C5
+  shimG.gain.value=0.015;
+  const shimLfo=ctx.createOscillator();const shimLG=ctx.createGain();
+  shimLfo.type='sine';shimLfo.frequency.value=0.1;
+  shimLG.gain.value=0.008;
+  shimLfo.connect(shimLG);shimLG.connect(shimG.gain);shimLfo.start();
+  shimmer.connect(shimG);shimG.connect(master);shimmer.start();
+  nodes.push(shimmer,shimG,shimLfo,shimLG);
+
+  // 六字吟唱旋律：唵嘛呢叭咪吽（6个音循环）
+  const sixNotes=[261.63,293.66,349.23,392,440,523.25]; // C4 D4 F4 G4 A4 C5
+  let noteIdx=0;
+  scheduleBeep(ctx,master,
+    ()=>2500+Math.random()*1500,
+    (c,m)=>{
+      if(currentTrack!=='mantra')return;
+      const t=c.currentTime;
+      const freq=sixNotes[noteIdx%sixNotes.length];
+      noteIdx++;
+      const osc=c.createOscillator();const g=c.createGain();
+      osc.type='sine';
+      osc.frequency.setValueAtTime(freq,t);
+      // 颤音模拟人声吟唱
+      const vib=c.createOscillator();const vibG=c.createGain();
+      vib.type='sine';vib.frequency.value=5;
+      vibG.gain.value=2;
+      vib.connect(vibG);vibG.connect(osc.frequency);vib.start(t);vib.stop(t+3);
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(0.045,t+0.5);
+      g.gain.setValueAtTime(0.04,t+2);
+      g.gain.exponentialRampToValueAtTime(0.001,t+3);
+      osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+3);
+    }
+  );
+
+  // 木鱼慢拍：每3-4秒
+  scheduleBeep(ctx,master,
+    ()=>3000+Math.random()*1000,
+    (c,m)=>{
+      if(currentTrack!=='mantra')return;
+      const t=c.currentTime;
+      const osc=c.createOscillator();const g=c.createGain();
+      osc.type='square';
+      osc.frequency.setValueAtTime(700,t);
+      osc.frequency.exponentialRampToValueAtTime(180,t+0.04);
+      g.gain.setValueAtTime(0.04,t);
+      g.gain.exponentialRampToValueAtTime(0.001,t+0.06);
+      osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+0.06);
+    }
+  );
+
+  // 引磬：每20-30秒
+  scheduleBeep(ctx,master,
+    ()=>20000+Math.random()*10000,
+    (c,m)=>{
+      if(currentTrack!=='mantra')return;
+      const t=c.currentTime;
+      // 双音引磬
+      [2349.32,3520].forEach((f,i)=>{
+        const osc=c.createOscillator();const g=c.createGain();
+        osc.type='sine';
+        osc.frequency.setValueAtTime(f,t);
+        osc.frequency.exponentialRampToValueAtTime(f*0.97,t+5);
+        g.gain.setValueAtTime(0.03-i*0.01,t);
+        g.gain.exponentialRampToValueAtTime(0.001,t+5);
+        osc.connect(g);g.connect(m);osc.start(t);osc.stop(t+5);
+      });
+    }
+  );
 
   return nodes;
 }
@@ -974,22 +1076,23 @@ function startMusic(){
   const ctx=getAudio();
   musicGain=ctx.createGain();
   const vol=document.getElementById('musicVol').value/100;
-  musicGain.gain.value=vol*0.5;
+  musicGain.gain.value=vol*0.6;
   musicGain.connect(ctx.destination);
 
-  if(currentTrack==='chant')musicNodes=playChant(ctx,musicGain);
-  else if(currentTrack==='stream')musicNodes=playStream(ctx,musicGain);
-  else if(currentTrack==='breeze')musicNodes=playBreeze(ctx,musicGain);
+  musicTimers=[];
+  if(currentTrack==='heart')musicNodes=playHeart(ctx,musicGain);
+  else if(currentTrack==='compassion')musicNodes=playCompassion(ctx,musicGain);
+  else if(currentTrack==='mantra')musicNodes=playMantra(ctx,musicGain);
 
   musicPlaying=true;
   document.getElementById('musicToggle').classList.add('playing');
   document.getElementById('musicToggle').innerHTML='&#9646;&#9646;';
-  // 记住偏好
   const d=gd();d.musicOn=true;d.musicTrack=currentTrack;sd(d);
 }
 
 function stopMusic(){
   if(!musicPlaying)return;
+  musicTimers.forEach(id=>clearTimeout(id));musicTimers=[];
   musicNodes.forEach(n=>{try{if(n.stop)n.stop();n.disconnect()}catch(e){}});
   musicNodes=[];
   if(musicGain){try{musicGain.disconnect()}catch(e){}}
@@ -1011,11 +1114,10 @@ function selectTrack(track){
 }
 
 function setMusicVol(v){
-  if(musicGain)musicGain.gain.value=(v/100)*0.5;
+  if(musicGain)musicGain.gain.value=(v/100)*0.6;
   const d=gd();d.musicVol=v;sd(d);
 }
 
-// 恢复上次音乐状态
 function restoreMusic(){
   const d=gd();
   if(d.musicTrack){
@@ -1023,7 +1125,6 @@ function restoreMusic(){
     document.querySelectorAll('.music-track').forEach(t=>t.classList.toggle('active',t.dataset.track===d.musicTrack));
   }
   if(d.musicVol)document.getElementById('musicVol').value=d.musicVol;
-  // 注意：浏览器策略要求用户交互后才能播放音频，所以不自动恢复播放
 }
 
 // ===== 飘尘 =====
