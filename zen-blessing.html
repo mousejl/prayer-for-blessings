@@ -95,6 +95,20 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 .btn-bell:hover{border-color:var(--gold);box-shadow:0 0 12px rgba(201,168,76,0.2);transform:scale(1.05)}
 .btn-bell:active{transform:scale(.9)}
 
+/* 音乐控制 */
+.music-bar{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
+.music-toggle{width:28px;height:28px;border-radius:50%;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);color:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;font-size:12px;flex-shrink:0}
+.music-toggle:hover{border-color:var(--gold);box-shadow:0 0 10px rgba(201,168,76,0.15)}
+.music-toggle.playing{border-color:var(--gold);background:rgba(201,168,76,0.12);animation:musicPulse 2s ease-in-out infinite}
+@keyframes musicPulse{0%,100%{box-shadow:0 0 0 rgba(201,168,76,0)}50%{box-shadow:0 0 8px rgba(201,168,76,0.2)}}
+.music-tracks{display:flex;gap:4px}
+.music-track{padding:3px 10px;border-radius:12px;font-size:9px;color:var(--warm-dim);opacity:.4;cursor:pointer;transition:all .3s;letter-spacing:1px;border:1px solid transparent;font-family:inherit;background:transparent}
+.music-track:hover{opacity:.6}
+.music-track.active{opacity:1;color:var(--gold);border-color:rgba(201,168,76,0.25);background:rgba(201,168,76,0.06)}
+.music-vol{width:50px;height:3px;-webkit-appearance:none;appearance:none;background:rgba(201,168,76,0.15);border-radius:2px;outline:none;cursor:pointer}
+.music-vol::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--gold);opacity:.6;cursor:pointer}
+.music-vol::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--gold);border:none;cursor:pointer}
+
 /* 信息栏 */
 .info-bar{display:flex;gap:20px;justify-content:center;align-items:center;padding:4px 0 0}
 .info-item{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--warm-dim);opacity:.55;letter-spacing:1px;cursor:default}
@@ -397,6 +411,16 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
       <button class="btn-sub" onclick="openLampModal()">供灯</button>
       <button class="btn-bell" onclick="ringBell()" title="敲钟"><span style="font-size:12px">🔔</span><span style="font-size:9px;margin-left:2px;letter-spacing:1px">敲钟</span></button>
       <button class="btn-sub" onclick="openShareModal()">分享</button>
+    </div>
+
+    <div class="music-bar">
+      <button class="music-toggle" id="musicToggle" onclick="toggleMusic()" title="背景音乐">&#9654;</button>
+      <div class="music-tracks" id="musicTracks">
+        <div class="music-track active" data-track="chant" onclick="selectTrack('chant')">禅院梵音</div>
+        <div class="music-track" data-track="stream" onclick="selectTrack('stream')">山涧清泉</div>
+        <div class="music-track" data-track="breeze" onclick="selectTrack('breeze')">空山松风</div>
+      </div>
+      <input type="range" class="music-vol" id="musicVol" min="0" max="100" value="40" oninput="setMusicVol(this.value)" title="音量">
     </div>
 
     <div class="info-bar">
@@ -787,6 +811,221 @@ function sharePoster(){
   closeShareModal();
 }
 
+// ===== 背景音乐系统（Web Audio API 合成） =====
+const musicTracks={
+  chant:{name:'禅院梵音',desc:'低频梵唱嗡鸣，如寺院早课'},
+  stream:{name:'山涧清泉',desc:'清脆水滴叮咚，如山泉流石'},
+  breeze:{name:'空山松风',desc:'轻柔风铃拂过，如松间听风'}
+};
+let musicPlaying=false, currentTrack='chant', musicGain=null, musicNodes=[];
+
+// 创建噪音缓冲（用于自然音效）
+function createNoiseBuffer(ctx,duration){
+  const len=ctx.sampleRate*duration;
+  const buf=ctx.createBuffer(1,len,ctx.sampleRate);
+  const data=buf.getChannelData(0);
+  for(let i=0;i<len;i++)data[i]=Math.random()*2-1;
+  return buf;
+}
+
+// 曲目1：禅院梵音 - Om drone + 和声泛音 + 远处钟声
+function playChant(ctx,master){
+  const nodes=[];
+  // 基频 Om drone (C2=65.41Hz)
+  const drone=ctx.createOscillator();const dGain=ctx.createGain();
+  drone.type='sine';drone.frequency.value=65.41;
+  dGain.gain.value=0.12;
+  drone.connect(dGain);dGain.connect(master);drone.start();
+  nodes.push(drone,dGain);
+
+  // 五度泛音 (G2=98Hz)
+  const fifth=ctx.createOscillator();const fGain=ctx.createGain();
+  fifth.type='sine';fifth.frequency.value=98;
+  fGain.gain.value=0.06;
+  fifth.connect(fGain);fGain.connect(master);fifth.start();
+  nodes.push(fifth,fGain);
+
+  // 高八度泛音 (C3=130.81Hz)
+  const oct=ctx.createOscillator();const oGain=ctx.createGain();
+  oct.type='sine';oct.frequency.value=130.81;
+  oGain.gain.value=0.04;
+  oct.connect(oGain);oGain.connect(master);oct.start();
+  nodes.push(oct,oGain);
+
+  // 缓慢LFO调制基频，营造呼吸感
+  const lfo=ctx.createOscillator();const lfoGain=ctx.createGain();
+  lfo.type='sine';lfo.frequency.value=0.08; // 8秒一个周期
+  lfoGain.gain.value=2; // 微调 ±2Hz
+  lfo.connect(lfoGain);lfoGain.connect(drone.frequency);lfo.start();
+  nodes.push(lfo,lfoGain);
+
+  // 远处钟声循环
+  function scheduleBell(){
+    if(!musicPlaying||currentTrack!=='chant')return;
+    const bellOsc=ctx.createOscillator();const bellG=ctx.createGain();
+    const t=ctx.currentTime;
+    bellOsc.type='sine';
+    bellOsc.frequency.setValueAtTime(523.25,t); // C5
+    bellOsc.frequency.exponentialRampToValueAtTime(520,t+6);
+    bellG.gain.setValueAtTime(0.04,t);
+    bellG.gain.exponentialRampToValueAtTime(0.001,t+6);
+    bellOsc.connect(bellG);bellG.connect(master);
+    bellOsc.start(t);bellOsc.stop(t+6);
+    setTimeout(scheduleBell,8000+Math.random()*12000); // 8-20秒一声
+  }
+  scheduleBell();
+  return nodes;
+}
+
+// 曲目2：山涧清泉 - 水滴声 + 流水白噪音 + 鸟鸣
+function playStream(ctx,master){
+  const nodes=[];
+  // 流水底噪（filtered noise）
+  const noiseBuf=createNoiseBuffer(ctx,4);
+  const noise=ctx.createBufferSource();
+  noise.buffer=noiseBuf;noise.loop=true;
+  const noiseFilter=ctx.createBiquadFilter();
+  noiseFilter.type='bandpass';noiseFilter.frequency.value=2000;noiseFilter.Q.value=0.5;
+  const noiseGain=ctx.createGain();noiseGain.gain.value=0.03;
+  noise.connect(noiseFilter);noiseFilter.connect(noiseGain);noiseGain.connect(master);noise.start();
+  nodes.push(noise,noiseFilter,noiseGain);
+
+  // 水滴叮咚循环
+  function scheduleDrop(){
+    if(!musicPlaying||currentTrack!=='stream')return;
+    const t=ctx.currentTime;
+    // 随机高频短促音模拟水滴
+    const freq=1200+Math.random()*2000;
+    const osc=ctx.createOscillator();const g=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.setValueAtTime(freq,t);
+    osc.frequency.exponentialRampToValueAtTime(freq*0.7,t+0.15);
+    g.gain.setValueAtTime(0.08,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+    osc.connect(g);g.connect(master);
+    osc.start(t);osc.stop(t+0.3);
+    setTimeout(scheduleDrop,200+Math.random()*800);
+  }
+  scheduleDrop();
+
+  // 低频水流衬底
+  const subOsc=ctx.createOscillator();const subG=ctx.createGain();
+  subOsc.type='sine';subOsc.frequency.value=82.41; // E2
+  subG.gain.value=0.04;
+  subOsc.connect(subG);subG.connect(master);subOsc.start();
+  nodes.push(subOsc,subG);
+
+  return nodes;
+}
+
+// 曲目3：空山松风 - 风铃 + 低频风声 + 虫鸣
+function playBreeze(ctx,master){
+  const nodes=[];
+
+  // 风声底噪（低频filtered noise）
+  const noiseBuf=createNoiseBuffer(ctx,4);
+  const windNoise=ctx.createBufferSource();
+  windNoise.buffer=noiseBuf;windNoise.loop=true;
+  const windFilter=ctx.createBiquadFilter();
+  windFilter.type='lowpass';windFilter.frequency.value=400;windFilter.Q.value=0.3;
+  const windGain=ctx.createGain();windGain.gain.value=0.035;
+  // 风声起伏LFO
+  const windLfo=ctx.createOscillator();const windLfoG=ctx.createGain();
+  windLfo.type='sine';windLfo.frequency.value=0.05;
+  windLfoG.gain.value=150;
+  windLfo.connect(windLfoG);windLfoG.connect(windFilter.frequency);windLfo.start();
+  windNoise.connect(windFilter);windFilter.connect(windGain);windGain.connect(master);windNoise.start();
+  nodes.push(windNoise,windFilter,windGain,windLfo,windLfoG);
+
+  // 风铃声循环
+  const chimeFreqs=[1318.51,1567.98,1760,2093,2349.32]; // E6 G6 A6 C7 D7
+  function scheduleChime(){
+    if(!musicPlaying||currentTrack!=='breeze')return;
+    const t=ctx.currentTime;
+    const freq=chimeFreqs[Math.floor(Math.random()*chimeFreqs.length)];
+    const osc=ctx.createOscillator();const g=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.setValueAtTime(freq,t);
+    osc.frequency.exponentialRampToValueAtTime(freq*0.95,t+2);
+    g.gain.setValueAtTime(0.05,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+2.5);
+    osc.connect(g);g.connect(master);
+    osc.start(t);osc.stop(t+2.5);
+    setTimeout(scheduleChime,1500+Math.random()*4000);
+  }
+  scheduleChime();
+
+  // 禅钟衬底
+  const padOsc=ctx.createOscillator();const padG=ctx.createGain();
+  padOsc.type='sine';padOsc.frequency.value=110; // A2
+  padG.gain.value=0.03;
+  const padLfo=ctx.createOscillator();const padLfoG=ctx.createGain();
+  padLfo.type='sine';padLfo.frequency.value=0.06;
+  padLfoG.gain.value=0.015;
+  padLfo.connect(padLfoG);padLfoG.connect(padG.gain);padLfo.start();
+  padOsc.connect(padG);padG.connect(master);padOsc.start();
+  nodes.push(padOsc,padG,padLfo,padLfoG);
+
+  return nodes;
+}
+
+function startMusic(){
+  if(musicPlaying)return;
+  const ctx=getAudio();
+  musicGain=ctx.createGain();
+  const vol=document.getElementById('musicVol').value/100;
+  musicGain.gain.value=vol*0.5;
+  musicGain.connect(ctx.destination);
+
+  if(currentTrack==='chant')musicNodes=playChant(ctx,musicGain);
+  else if(currentTrack==='stream')musicNodes=playStream(ctx,musicGain);
+  else if(currentTrack==='breeze')musicNodes=playBreeze(ctx,musicGain);
+
+  musicPlaying=true;
+  document.getElementById('musicToggle').classList.add('playing');
+  document.getElementById('musicToggle').innerHTML='&#9646;&#9646;';
+  // 记住偏好
+  const d=gd();d.musicOn=true;d.musicTrack=currentTrack;sd(d);
+}
+
+function stopMusic(){
+  if(!musicPlaying)return;
+  musicNodes.forEach(n=>{try{if(n.stop)n.stop();n.disconnect()}catch(e){}});
+  musicNodes=[];
+  if(musicGain){try{musicGain.disconnect()}catch(e){}}
+  musicPlaying=false;
+  document.getElementById('musicToggle').classList.remove('playing');
+  document.getElementById('musicToggle').innerHTML='&#9654;';
+  const d=gd();d.musicOn=false;sd(d);
+}
+
+function toggleMusic(){
+  if(musicPlaying)stopMusic();else startMusic();
+}
+
+function selectTrack(track){
+  currentTrack=track;
+  document.querySelectorAll('.music-track').forEach(t=>t.classList.toggle('active',t.dataset.track===track));
+  if(musicPlaying){stopMusic();startMusic()}
+  const d=gd();d.musicTrack=track;sd(d);
+}
+
+function setMusicVol(v){
+  if(musicGain)musicGain.gain.value=(v/100)*0.5;
+  const d=gd();d.musicVol=v;sd(d);
+}
+
+// 恢复上次音乐状态
+function restoreMusic(){
+  const d=gd();
+  if(d.musicTrack){
+    currentTrack=d.musicTrack;
+    document.querySelectorAll('.music-track').forEach(t=>t.classList.toggle('active',t.dataset.track===d.musicTrack));
+  }
+  if(d.musicVol)document.getElementById('musicVol').value=d.musicVol;
+  // 注意：浏览器策略要求用户交互后才能播放音频，所以不自动恢复播放
+}
+
 // ===== 飘尘 =====
 function initDust(){const l=document.getElementById('dustLayer');const count=window.innerWidth>768?16:8;for(let i=0;i<count;i++){const d=document.createElement('div');d.className='dust';d.style.left=Math.random()*100+'%';d.style.top=(60+Math.random()*40)+'%';d.style.width=d.style.height=(0.5+Math.random()*1.5)+'px';d.style.animationDuration=(8+Math.random()*12)+'s';d.style.animationDelay=Math.random()*10+'s';l.appendChild(d)}}
 
@@ -796,7 +1035,7 @@ function initDust(){const l=document.getElementById('dustLayer');const count=win
 });
 
 // ===== 初始化 =====
-initWishTypes();initLampBuddhas();initDust();initFestivalBar();
+initWishTypes();initLampBuddhas();initDust();initFestivalBar();restoreMusic();
 renderSticks();renderLampRing();updateInfo();
 const _d=gd();
 if((_d.activeIncense||[]).filter(i=>Date.now()-i.st<i.dur).length>0)startSmoke();
