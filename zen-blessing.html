@@ -57,7 +57,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 .burner{width:64px;height:28px;position:relative;z-index:3;background:linear-gradient(180deg,#5A4030,#3A2520);border-radius:4px 4px 12px 12px;box-shadow:0 4px 12px rgba(0,0,0,.6)}
 .burner::before{content:'';position:absolute;top:-3px;left:6px;right:6px;height:5px;background:linear-gradient(180deg,#7A5A40,#5A4030);border-radius:3px}
 .burner-char{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:var(--gold);opacity:.6}
-#smokeCanvas{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);width:160px;height:280px;pointer-events:none;z-index:4}
+#smokeCanvas{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:160px;height:280px;pointer-events:none;z-index:4}
 
 /* 供灯环 - 圆弧排列 */
 .burner-combo{position:relative}
@@ -454,9 +454,8 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
       </div>
 
       <div class="burner-combo">
-        <div class="sticks-row" id="sticksRow">
-          <canvas id="smokeCanvas" width="160" height="280"></canvas>
-        </div>
+        <div class="sticks-row" id="sticksRow"></div>
+        <canvas id="smokeCanvas" width="160" height="280"></canvas>
         <div class="burner"><span class="burner-char">福</span></div>
         <div class="lamp-ring" id="lampRing"></div>
       </div>
