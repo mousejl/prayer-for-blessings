@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>禅心祈福</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--gold:#C9A84C;--gold-soft:rgba(201,168,76,0.6);--gold-dim:rgba(201,168,76,0.15);--warm:#F5E6C8;--warm-dim:rgba(245,230,200,0.3);--deep:#0E0B08}
+body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--deep);color:var(--warm);height:100vh;overflow:hidden;user-select:none;position:relative;margin:0 auto;text-align:center}
+
+/* 背景 */
+.layer-bg{position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 100%,rgba(40,28,16,0.8) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 50% 20%,rgba(60,40,20,0.3) 0%,transparent 50%),linear-gradient(180deg,#080604 0%,#0E0B08 30%,#16100A 70%,#0E0B08 100%)}
+.ambient-glow{position:fixed;width:400px;height:400px;top:35%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(201,168,76,0.06) 0%,transparent 70%);animation:ambPulse 4s ease-in-out infinite;pointer-events:none;z-index:1}
+@keyframes ambPulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}
+.dust-layer{position:fixed;inset:0;z-index:2;pointer-events:none}
+.dust{position:absolute;border-radius:50%;background:var(--gold);opacity:0;animation:dustFloat linear infinite}
+@keyframes dustFloat{0%{opacity:0;transform:translateY(0) translateX(0)}10%{opacity:.3}90%{opacity:.1}100%{opacity:0;transform:translateY(-100vh) translateX(20px)}}
+
+/* 节气/佛诞日提醒横幅 */
+.festival-bar{position:fixed;top:0;left:0;right:0;z-index:50;text-align:center;padding:6px 16px;background:linear-gradient(180deg,rgba(201,168,76,0.08),transparent);font-size:10px;letter-spacing:2px;color:var(--gold);opacity:0.7;pointer-events:none;transition:opacity .5s}
+.festival-bar.hidden{opacity:0}
+.festival-bar .fest-icon{margin-right:4px}
+
+/* 主容器 */
+.app{position:relative;z-index:5;height:100vh;display:flex;flex-direction:column;align-items:center;margin:0 auto;width:100%}
+
+/* 顶部 */
+.top-area{flex-shrink:0;text-align:center;padding:24px 0 8px;width:100%}
+.title{font-size:24px;font-weight:300;letter-spacing:12px;color:var(--gold);opacity:.85;text-shadow:0 0 30px rgba(201,168,76,0.15)}
+.tagline{font-size:10px;letter-spacing:4px;color:var(--warm-dim);opacity:.4;margin-top:4px}
+.ornament{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.ornament-line{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
+.ornament-dot{width:3px;height:3px;border-radius:50%;background:var(--gold);opacity:.3}
+
+/* 祭坛 */
+.altar-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;width:100%;min-height:0}
+.buddha-light{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.06) 0%,rgba(201,168,76,0.02) 40%,transparent 70%);animation:bLightPulse 5s ease-in-out infinite;pointer-events:none}
+@keyframes bLightPulse{0%,100%{transform:translate(-50%,-60%) scale(1);opacity:.8}50%{transform:translate(-50%,-60%) scale(1.1);opacity:1}}
+
+/* 精细佛像SVG */
+.buddha-icon{width:80px;height:120px;position:relative;z-index:2;margin-bottom:8px;color:var(--gold);filter:drop-shadow(0 0 20px rgba(201,168,76,0.12))}
+
+/* 香炉 */
+.burner-combo{position:relative;display:flex;flex-direction:column;align-items:center}
+.sticks-row{display:flex;gap:7px;margin-bottom:-2px;position:relative;z-index:3;height:50px;align-items:flex-end}
+.stick{width:2px;height:0;background:linear-gradient(to bottom,#E8A040 0%,#A07840 40%,#6B5030 100%);border-radius:1px;position:relative;transition:height 2s cubic-bezier(.25,.46,.45,.94)}
+.stick.lit{height:48px}
+.stick .ember{position:absolute;top:-2px;left:-2px;width:6px;height:4px;background:radial-gradient(ellipse,#FF6020 0%,rgba(255,96,32,0.3) 60%,transparent 100%);border-radius:50%;animation:emberF .4s ease-in-out infinite alternate}
+@keyframes emberF{0%{opacity:.6;transform:scaleX(.8) scaleY(.9)}100%{opacity:1;transform:scaleX(1.2) scaleY(1.1)}}
+.burner{width:64px;height:28px;position:relative;z-index:3;background:linear-gradient(180deg,#5A4030,#3A2520);border-radius:4px 4px 12px 12px;box-shadow:0 4px 12px rgba(0,0,0,.6)}
+.burner::before{content:'';position:absolute;top:-3px;left:6px;right:6px;height:5px;background:linear-gradient(180deg,#7A5A40,#5A4030);border-radius:3px}
+.burner-char{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;color:var(--gold);opacity:.4}
+#smokeCanvas{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);width:160px;height:200px;pointer-events:none;z-index:4}
+
+/* 供灯环 - 圆弧排列 */
+.burner-combo{position:relative}
+.lamp-ring{position:absolute;top:100%;left:50%;transform:translateX(-50%);z-index:3;width:200px;height:50px;margin-top:8px;pointer-events:none}
+.mini-lamp{width:14px;height:20px;position:absolute;cursor:pointer;transition:all .4s;pointer-events:auto}
+.mini-lamp:hover{filter:brightness(1.4);transform:scale(1.15)}
+.mini-lamp .flame{width:6px;height:8px;margin:0 auto;background:radial-gradient(ellipse at bottom,#FFA940,#FF6B35 50%,transparent 100%);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;position:relative;z-index:1;animation:mFlame .7s ease-in-out infinite alternate}
+@keyframes mFlame{0%{transform:scaleX(.85) scaleY(1.05) translateX(-.3px)}100%{transform:scaleX(1.05) scaleY(.9) translateX(.3px)}}
+.mini-lamp .glow{position:absolute;top:-6px;left:-8px;width:30px;height:30px;background:radial-gradient(circle,rgba(255,169,64,0.25) 0%,transparent 70%);border-radius:50%;animation:glowBreathe 2.5s ease-in-out infinite}
+@keyframes glowBreathe{0%,100%{opacity:.4;transform:scale(.9)}50%{opacity:1;transform:scale(1.1)}}
+.mini-lamp .base{width:8px;height:10px;margin:-1px auto 0;background:linear-gradient(180deg,#B89860,#7A6040);border-radius:1px 1px 2px 2px;position:relative;z-index:1}
+.mini-lamp.empty{opacity:.35}.mini-lamp.empty .flame{background:rgba(201,168,76,0.2);animation:none}.mini-lamp.empty .glow{display:none}
+/* 新灯出现动画 */
+.mini-lamp.appear{animation:lampAppear .6s ease-out}
+@keyframes lampAppear{0%{opacity:0;transform:scale(0) translateY(10px)}60%{opacity:1;transform:scale(1.2) translateY(-2px)}100%{transform:scale(1) translateY(0)}}
+
+/* 底部 */
+.bottom-area{flex-shrink:0;width:100%;padding:0 16px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.main-actions{display:flex;gap:10px;justify-content:center;align-items:center}
+.btn-incense{padding:8px 28px;border-radius:20px;background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border:1px solid rgba(201,168,76,0.3);color:var(--gold);font-size:13px;font-family:inherit;letter-spacing:4px;cursor:pointer;transition:all .4s;position:relative;overflow:hidden}
+.btn-incense:hover{border-color:var(--gold);box-shadow:0 0 20px rgba(201,168,76,0.15);transform:translateY(-1px)}
+.btn-incense:active{transform:scale(.97)}.btn-incense:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.btn-sub{padding:7px 18px;border-radius:16px;background:transparent;border:1px solid rgba(201,168,76,0.25);color:var(--warm-dim);opacity:.7;font-size:12px;font-family:inherit;letter-spacing:2px;cursor:pointer;transition:all .3s}
+.btn-sub:hover{border-color:rgba(201,168,76,0.5);color:var(--gold);opacity:1}
+
+/* 香型 */
+.incense-select{display:flex;gap:16px;align-items:center}
+.incense-opt{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .3s;padding:4px 8px;border-radius:8px}
+.incense-opt:hover{background:rgba(201,168,76,0.05)}.incense-opt.active{background:rgba(201,168,76,0.08)}
+.incense-dot{width:8px;height:8px;border-radius:50%;border:1px solid rgba(201,168,76,0.5);transition:all .3s;background:rgba(201,168,76,0.1)}
+.incense-opt.active .incense-dot{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(201,168,76,0.4)}
+.incense-opt.sandal .incense-dot{border-color:#A08060}.incense-opt.sandal.active .incense-dot{background:#A08060;box-shadow:0 0 8px rgba(160,128,96,0.4)}
+.incense-opt.aloes .incense-dot{border-color:#8B6B4A}.incense-opt.aloes.active .incense-dot{background:#8B6B4A;box-shadow:0 0 8px rgba(139,107,74,0.4)}
+.incense-opt.lily .incense-dot{border-color:#C8BFA8}.incense-opt.lily.active .incense-dot{background:#C8BFA8;box-shadow:0 0 8px rgba(200,191,168,0.4)}
+.incense-name{font-size:10px;color:var(--warm-dim);opacity:.7;transition:all .3s;letter-spacing:1px}
+.incense-opt.active .incense-name{color:var(--gold);opacity:.9}
+
+/* 敲钟按钮 */
+.btn-bell{height:32px;border-radius:16px;padding:0 12px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);color:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;font-family:inherit;gap:2px}
+.btn-bell:hover{border-color:var(--gold);box-shadow:0 0 12px rgba(201,168,76,0.2);transform:scale(1.05)}
+.btn-bell:active{transform:scale(.9)}
+
+/* 信息栏 */
+.info-bar{display:flex;gap:20px;justify-content:center;align-items:center;padding:4px 0 0}
+.info-item{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--warm-dim);opacity:.55;letter-spacing:1px;cursor:default}
+.info-item.clickable{cursor:pointer;transition:opacity .3s}
+.info-item.clickable:hover{opacity:.7}
+.info-num{color:var(--gold);font-size:12px;opacity:.8}
+.info-sep{width:1px;height:10px;background:rgba(201,168,76,0.1)}
+
+/* 弹窗 */
+.modal-bg{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(6px)}
+.modal-bg.show{display:flex}
+.modal-card{width:100%;max-width:300px;background:linear-gradient(180deg,#1C1610,#14100C);border:1px solid rgba(201,168,76,0.15);border-radius:16px;padding:24px 20px;animation:modalIn .3s ease}
+@keyframes modalIn{from{transform:translateY(15px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+.modal-heading{text-align:center;font-size:15px;color:var(--gold);letter-spacing:6px;margin-bottom:18px;font-weight:300}
+.modal-btns{display:flex;gap:10px}
+.modal-btn{flex:1;padding:9px;border-radius:8px;font-size:12px;font-family:inherit;cursor:pointer;letter-spacing:2px;border:none;transition:all .3s}
+.m-cancel{background:rgba(255,255,255,0.03);color:var(--warm-dim)}
+.m-ok{background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(201,168,76,0.08));color:var(--gold);border:1px solid rgba(201,168,76,0.25)}
+.wish-types{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.wish-type-btn{padding:8px 2px;background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.08);border-radius:8px;text-align:center;font-size:11px;color:var(--warm-dim);cursor:pointer;transition:all .3s;font-family:inherit}
+.wish-type-btn.sel{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,0.1)}
+.wish-textarea{width:100%;padding:10px;background:rgba(0,0,0,.4);border:1px solid rgba(201,168,76,0.1);border-radius:8px;color:var(--warm);font-size:12px;font-family:inherit;resize:none;outline:none;margin-bottom:14px}
+.wish-textarea::placeholder{color:rgba(245,230,200,0.15)}.wish-textarea:focus{border-color:rgba(201,168,76,0.3)}
+.lamp-modal-buddhas{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.buddha-card{padding:10px 4px;background:rgba(201,168,76,0.03);border:1px solid rgba(201,168,76,0.08);border-radius:10px;text-align:center;cursor:pointer;transition:all .3s;font-family:inherit}
+.buddha-card.sel{border-color:var(--gold);background:rgba(201,168,76,0.1)}
+.buddha-card-name{font-size:12px;color:var(--gold);margin-bottom:2px}
+.buddha-card-desc{font-size:9px;color:var(--warm-dim);opacity:.4}
+.wish-wall-list{max-height:50vh;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.wish-wall-list::-webkit-scrollbar{display:none}
+.wall-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(0,0,0,.2);border-radius:8px;border:1px solid rgba(201,168,76,0.06)}
+.wall-type{font-size:10px;color:var(--gold);padding:2px 6px;background:rgba(201,168,76,0.1);border-radius:4px;flex-shrink:0}
+.wall-text{font-size:11px;color:var(--warm-dim);flex:1}
+.wall-date{font-size:9px;color:rgba(245,230,200,0.2);flex-shrink:0}
+
+/* 分享弹窗 */
+.share-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.share-item{display:flex;align-items:center;gap:10px;padding:12px;background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,0.08);border-radius:10px;cursor:pointer;transition:all .3s;font-family:inherit}
+.share-item:hover{border-color:rgba(201,168,76,0.3);background:rgba(201,168,76,0.05)}
+.share-icon{font-size:20px;width:32px;text-align:center}
+.share-label{font-size:12px;color:var(--warm-dim)}
+.share-desc{font-size:9px;color:var(--warm-dim);opacity:.4;margin-top:2px}
+
+/* 节气信息卡 */
+.fest-card{padding:14px;background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.1);border-radius:10px;margin-bottom:14px;text-align:center}
+.fest-name{font-size:16px;color:var(--gold);letter-spacing:3px;margin-bottom:4px}
+.fest-desc{font-size:11px;color:var(--warm-dim);opacity:.5;line-height:1.6}
+.fest-date{font-size:9px;color:var(--warm-dim);opacity:.3;margin-top:6px}
+
+.toast{position:fixed;top:50px;left:50%;transform:translateX(-50%) translateY(-10px);padding:7px 20px;background:rgba(20,16,12,.95);border:1px solid rgba(201,168,76,0.2);border-radius:20px;color:var(--gold);font-size:11px;letter-spacing:1px;z-index:200;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.lotus-fx{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:90;opacity:0;transition:opacity .3s}
+.lotus-fx.show{opacity:1}
+.lotus-fx svg{width:140px;height:140px;animation:lotusAnim 1.3s ease-out forwards}
+@keyframes lotusAnim{0%{transform:scale(0) rotate(-30deg);opacity:0}40%{transform:scale(1.1) rotate(5deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:0}}
+
+/* ===== 手机端适配 ===== */
+@media screen and (max-width:430px){
+  /* 安全区 */
+  .top-area{padding-top:max(24px,env(safe-area-inset-top))}
+  .bottom-area{padding-bottom:max(16px,env(safe-area-inset-bottom))}
+  .festival-bar{padding-top:max(6px,env(safe-area-inset-top))}
+  /* 整体紧凑 */
+  .top-area{padding-bottom:4px}
+  .title{font-size:20px;letter-spacing:8px}
+  .tagline{font-size:9px;margin-top:2px}
+  .ornament{margin-top:4px}
+  /* 佛像缩小 */
+  .buddha-icon{width:64px;height:96px;margin-bottom:6px}
+  .buddha-light{width:180px;height:180px}
+  /* 香炉缩小 */
+  .burner{width:56px;height:24px}
+  .burner::before{left:5px;right:5px;height:4px;top:-2px}
+  .burner-char{font-size:10px}
+  .stick.lit{height:40px}
+  .sticks-row{height:42px;gap:6px}
+  #smokeCanvas{width:120px;height:160px;bottom:22px}
+  /* 供灯环缩小 */
+  .lamp-ring{width:160px;height:44px;margin-top:6px}
+  .mini-lamp{width:12px;height:17px}
+  .mini-lamp .flame{width:5px;height:7px}
+  .mini-lamp .base{width:7px;height:8px}
+  .mini-lamp .glow{top:-5px;left:-6px;width:24px;height:24px}
+  /* 香型间距 */
+  .incense-select{gap:12px}
+  .incense-name{font-size:9px}
+  .incense-dot{width:7px;height:7px}
+  /* 按钮行紧凑 */
+  .main-actions{gap:6px;flex-wrap:wrap;justify-content:center}
+  .btn-incense{padding:7px 20px;font-size:12px;letter-spacing:3px}
+  .btn-sub{padding:6px 14px;font-size:11px;letter-spacing:1px}
+  .btn-bell{padding:0 10px;height:30px;gap:1px}
+  .btn-bell span:last-child{font-size:8px}
+  /* 底部信息栏 */
+  .info-bar{gap:12px}
+  .info-item{font-size:9px;gap:2px}
+  .info-num{font-size:11px}
+}
+
+/* 小屏兜底（iPhone SE / 320px） */
+@media screen and (max-width:360px){
+  .title{font-size:18px;letter-spacing:6px}
+  .buddha-icon{width:56px;height:84px;margin-bottom:4px}
+  .burner{width:50px;height:22px}
+  .sticks-row{height:36px;gap:5px}
+  .stick.lit{height:34px}
+  #smokeCanvas{width:100px;height:140px;bottom:18px}
+  .lamp-ring{width:140px;height:38px;margin-top:4px}
+  .main-actions{gap:5px}
+  .btn-incense{padding:6px 16px;font-size:11px}
+  .btn-sub{padding:5px 10px;font-size:10px}
+  .btn-bell{padding:0 8px;height:28px}
+  .info-bar{gap:8px}
+  .incense-select{gap:10px}
+  .modal-card{padding:20px 16px}
+  .modal-heading{font-size:14px;letter-spacing:4px}
+  .wish-types,.lamp-modal-buddhas{gap:4px}
+}
+
+/* 横屏手机适配 */
+@media screen and (max-height:500px) and (orientation:landscape){
+  .top-area{padding:8px 0 2px}
+  .title{font-size:16px;letter-spacing:6px}
+  .tagline{display:none}
+  .ornament{display:none}
+  .buddha-icon{width:48px;height:72px;margin-bottom:2px}
+  .buddha-light{width:120px;height:120px}
+  .burner{width:48px;height:20px}
+  .sticks-row{height:30px;gap:5px}
+  .stick.lit{height:28px}
+  #smokeCanvas{width:80px;height:100px;bottom:18px}
+  .lamp-ring{width:120px;height:36px;margin-top:4px}
+  .mini-lamp{width:10px;height:14px}
+  .bottom-area{gap:6px;padding-bottom:8px}
+  .main-actions{gap:5px}
+  .btn-incense{padding:5px 14px;font-size:11px}
+  .btn-sub{padding:5px 10px;font-size:10px}
+  .info-bar{gap:10px}
+}
+
+/* ===== 平板端适配 (431px ~ 768px) ===== */
+@media screen and (min-width:431px) and (max-width:768px){
+  .title{font-size:22px;letter-spacing:10px}
+  .buddha-icon{width:72px;height:108px;margin-bottom:7px}
+  .buddha-light{width:200px;height:200px}
+  .burner{width:60px;height:26px}
+  .stick.lit{height:44px}
+  .sticks-row{height:46px;gap:6px}
+  #smokeCanvas{width:140px;height:180px;bottom:24px}
+  .lamp-ring{width:180px;height:46px;margin-top:7px}
+  .main-actions{gap:8px}
+  .btn-incense{padding:7px 24px;font-size:12px}
+  .btn-sub{padding:6px 16px;font-size:11px}
+}
+
+/* ===== PC端优化 (>768px) ===== */
+@media screen and (min-width:769px){
+  /* 标题区放大 */
+  .top-area{padding:32px 0 12px}
+  .title{font-size:30px;letter-spacing:16px}
+  .tagline{font-size:12px;margin-top:8px;opacity:.6}
+  .ornament{margin-top:10px}
+  .ornament-line{width:60px}
+  /* 佛像放大 + 光晕增强 */
+  .buddha-icon{width:120px;height:180px;margin-bottom:14px;filter:drop-shadow(0 0 35px rgba(201,168,76,0.2))}
+  .buddha-light{width:320px;height:320px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,rgba(201,168,76,0.04) 40%,transparent 70%)}
+  /* 香炉放大 */
+  .burner{width:80px;height:34px;border-radius:5px 5px 16px 16px}
+  .burner::before{height:6px;top:-4px}
+  .burner-char{font-size:13px}
+  .stick.lit{height:56px}
+  .sticks-row{height:58px;gap:9px}
+  #smokeCanvas{width:220px;height:260px;bottom:30px}
+  /* 供灯环放大 */
+  .lamp-ring{width:260px;height:60px;margin-top:14px}
+  .mini-lamp{width:18px;height:25px}
+  .mini-lamp .flame{width:8px;height:10px}
+  .mini-lamp .base{width:10px;height:12px}
+  .mini-lamp .glow{top:-8px;left:-10px;width:38px;height:38px}
+  /* 香型放大 */
+  .incense-select{gap:24px}
+  .incense-name{font-size:12px}
+  .incense-dot{width:10px;height:10px}
+  /* 按钮放大 */
+  .bottom-area{padding:0 24px 24px;gap:14px}
+  .main-actions{gap:14px}
+  .btn-incense{padding:10px 36px;font-size:15px;letter-spacing:6px;border-radius:24px}
+  .btn-sub{padding:9px 24px;font-size:14px;letter-spacing:3px;border-radius:20px}
+  .btn-bell{height:40px;padding:0 16px;gap:4px;border-radius:20px}
+  .btn-bell span:first-child{font-size:16px}
+  .btn-bell span:last-child{font-size:11px}
+  /* 信息栏放大 */
+  .info-bar{gap:28px}
+  .info-item{font-size:12px;gap:5px}
+  .info-num{font-size:15px}
+  /* 弹窗放大 */
+  .modal-card{max-width:380px;padding:30px 28px;border-radius:20px}
+  .modal-heading{font-size:18px;letter-spacing:8px;margin-bottom:24px}
+  .wish-type-btn{font-size:13px;padding:12px 4px}
+  .buddha-card{padding:14px 8px;border-radius:12px}
+  .buddha-card-name{font-size:14px}
+  .buddha-card-desc{font-size:10px}
+  .wish-textarea{font-size:13px;padding:12px}
+  /* toast 放大 */
+  .toast{font-size:13px;padding:9px 24px}
+}
+
+/* 超宽屏(>1400px)进一步放大氛围 */
+@media screen and (min-width:1400px){
+  .buddha-icon{width:140px;height:210px;margin-bottom:16px;filter:drop-shadow(0 0 40px rgba(201,168,76,0.25))}
+  .buddha-light{width:360px;height:360px}
+  .title{font-size:34px;letter-spacing:20px}
+  .ambient-glow{width:500px;height:500px}
+}
+</style>
+</head>
+<body>
+<div class="layer-bg"></div>
+<div class="ambient-glow"></div>
+<div class="dust-layer" id="dustLayer"></div>
+<div class="festival-bar" id="festBar"></div>
+
+<div class="app">
+  <div class="top-area">
+    <div class="title">禅心祈福</div>
+    <div class="tagline">心香一炷 · 祈愿众生</div>
+    <div class="ornament"><div class="ornament-line"></div><div class="ornament-dot"></div><div class="ornament-line"></div></div>
+  </div>
+
+  <div class="altar-area">
+    <div class="buddha-light"></div>
+
+    <!-- 精细佛像SVG：跏趺坐佛，螺髻、法印、莲座 -->
+    <svg class="buddha-icon" viewBox="0 0 100 150" fill="none">
+      <!-- 佛光背光 -->
+      <ellipse cx="50" cy="42" rx="38" ry="42" fill="currentColor" opacity="0.05"/>
+      <ellipse cx="50" cy="42" rx="32" ry="36" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.18"/>
+      <!-- 肉髻 -->
+      <ellipse cx="50" cy="14" rx="8" ry="7" fill="currentColor" opacity="0.3"/>
+      <!-- 头 -->
+      <ellipse cx="50" cy="26" rx="10" ry="11" fill="currentColor" opacity="0.25"/>
+      <!-- 面部轮廓 -->
+      <ellipse cx="50" cy="27" rx="8" ry="9" fill="currentColor" opacity="0.12"/>
+      <!-- 眉间白毫 -->
+      <circle cx="50" cy="24" r="1" fill="currentColor" opacity="0.4"/>
+      <!-- 身体 - 内衣 -->
+      <path d="M38 36 Q50 32 62 36 L64 55 Q50 58 36 55 Z" fill="currentColor" opacity="0.2"/>
+      <!-- 袈裟 -->
+      <path d="M32 38 Q50 34 68 38 L72 80 Q50 85 28 80 Z" fill="currentColor" opacity="0.15"/>
+      <!-- 袈裟褶纹 -->
+      <path d="M40 45 Q50 50 60 45" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.15"/>
+      <path d="M38 55 Q50 60 62 55" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.12"/>
+      <!-- 禅定印（双手交叠） -->
+      <ellipse cx="50" cy="62" rx="10" ry="5" fill="currentColor" opacity="0.18"/>
+      <!-- 双腿跏趺坐 -->
+      <path d="M28 72 Q35 65 50 68 Q65 65 72 72 Q75 82 68 88 Q50 95 32 88 Q25 82 28 72 Z" fill="currentColor" opacity="0.15"/>
+      <!-- 莲座 -->
+      <path d="M30 88 Q50 92 70 88 Q68 95 50 98 Q32 95 30 88 Z" fill="currentColor" opacity="0.12"/>
+      <path d="M25 92 Q50 98 75 92" fill="none" stroke="currentColor" stroke-width="0.4" opacity="0.1"/>
+      <!-- 莲座瓣 -->
+      <path d="M35 92 Q40 98 45 92" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+      <path d="M45 92 Q50 100 55 92" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+      <path d="M55 92 Q60 98 65 92" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+      <!-- 头光 -->
+      <circle cx="50" cy="26" r="16" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+      <circle cx="50" cy="26" r="22" fill="none" stroke="currentColor" stroke-width="0.2" opacity="0.06"/>
+    </svg>
+
+    <div class="burner-combo">
+      <div class="sticks-row" id="sticksRow"></div>
+      <div class="burner"><span class="burner-char">福</span></div>
+      <canvas id="smokeCanvas" width="160" height="200"></canvas>
+      <div class="lamp-ring" id="lampRing"></div>
+    </div>
+  </div>
+
+  <div class="bottom-area">
+    <div class="incense-select" id="incenseSelect">
+      <div class="incense-opt sandal active" data-type="sandalwood" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">檀香</div></div>
+      <div class="incense-opt aloes" data-type="aloeswood" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">沉香</div></div>
+      <div class="incense-opt lily" data-type="lily" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">清香</div></div>
+    </div>
+
+    <div class="main-actions">
+      <button class="btn-incense" id="btnIncense" onclick="offerIncense()">请 香</button>
+      <button class="btn-sub" onclick="openWishModal()">许愿</button>
+      <button class="btn-sub" onclick="openLampModal()">供灯</button>
+      <button class="btn-bell" onclick="ringBell()" title="敲钟"><span style="font-size:12px">🔔</span><span style="font-size:9px;margin-left:2px;letter-spacing:1px">敲钟</span></button>
+      <button class="btn-sub" onclick="openShareModal()">分享</button>
+    </div>
+
+    <div class="info-bar">
+      <div class="info-item"><span class="info-num" id="nInc">0</span>上香</div>
+      <div class="info-sep"></div>
+      <div class="info-item clickable" onclick="openWallModal()"><span class="info-num" id="nWish">0</span>许愿</div>
+      <div class="info-sep"></div>
+      <div class="info-item"><span class="info-num" id="nLamp">0</span>供灯</div>
+      <div class="info-sep"></div>
+      <div class="info-item clickable" onclick="checkin()"><span class="info-num" id="nStreak">0</span><span id="streakLabel">天</span></div>
+      <div class="info-sep"></div>
+      <div class="info-item clickable" onclick="openFestModal()">🪷</div>
+    </div>
+  </div>
+</div>
+
+<!-- 许愿弹窗 -->
+<div class="modal-bg" id="wishModal">
+  <div class="modal-card">
+    <div class="modal-heading">许愿祈福</div>
+    <div class="wish-types" id="wishTypes"></div>
+    <textarea class="wish-textarea" id="wishInput" rows="2" maxlength="50" placeholder="写下你的心愿…"></textarea>
+    <div class="modal-btns"><button class="modal-btn m-cancel" onclick="closeWishModal()">取消</button><button class="modal-btn m-ok" onclick="submitWish()">祈愿</button></div>
+  </div>
+</div>
+
+<!-- 供灯弹窗 -->
+<div class="modal-bg" id="lampModal">
+  <div class="modal-card">
+    <div class="modal-heading">供奉明灯</div>
+    <div class="lamp-modal-buddhas" id="lampBuddhas"></div>
+    <div class="modal-btns"><button class="modal-btn m-cancel" onclick="closeLampModal()">取消</button><button class="modal-btn m-ok" onclick="submitLamp()">供灯</button></div>
+  </div>
+</div>
+
+<!-- 祈福墙弹窗 -->
+<div class="modal-bg" id="wallModal">
+  <div class="modal-card">
+    <div class="modal-heading">祈福墙</div>
+    <div class="wish-wall-list" id="wishWallList"></div>
+    <div class="modal-btns"><button class="modal-btn m-cancel" onclick="closeWallModal()">关闭</button></div>
+  </div>
+</div>
+
+<!-- 分享弹窗 -->
+<div class="modal-bg" id="shareModal">
+  <div class="modal-card">
+    <div class="modal-heading">广结善缘</div>
+    <div class="share-list">
+      <div class="share-item" onclick="shareCopy()">
+        <div class="share-icon">📋</div>
+        <div><div class="share-label">复制链接</div><div class="share-desc">复制页面地址，发送给好友</div></div>
+      </div>
+      <div class="share-item" onclick="shareWechat()">
+        <div class="share-icon">💬</div>
+        <div><div class="share-label">微信分享</div><div class="share-desc">截图分享到微信好友或朋友圈</div></div>
+      </div>
+      <div class="share-item" onclick="sharePoster()">
+        <div class="share-icon">🖼</div>
+        <div><div class="share-label">祈福海报</div><div class="share-desc">生成专属祈福卡片，长按保存</div></div>
+      </div>
+    </div>
+    <div class="modal-btns"><button class="modal-btn m-cancel" onclick="closeShareModal()">关闭</button></div>
+  </div>
+</div>
+
+<!-- 节气/佛诞弹窗 -->
+<div class="modal-bg" id="festModal">
+  <div class="modal-card">
+    <div class="modal-heading">佛历节气</div>
+    <div id="festContent"></div>
+    <div class="modal-btns"><button class="modal-btn m-cancel" onclick="closeFestModal()">关闭</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="lotus-fx" id="lotusFx">
+  <svg viewBox="0 0 200 200"><g transform="translate(100,100)">
+    <ellipse cx="0" cy="-28" rx="16" ry="40" fill="rgba(232,180,184,0.6)" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="40" fill="rgba(232,180,184,0.5)" transform="rotate(45)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="40" fill="rgba(232,180,184,0.4)" transform="rotate(90)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="40" fill="rgba(232,180,184,0.5)" transform="rotate(135)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="40" fill="rgba(232,180,184,0.4)" transform="rotate(180)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="40" fill="rgba(232,180,184,0.5)" transform="rotate(225)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="40" fill="rgba(232,180,184,0.4)" transform="rotate(270)"/>
+    <ellipse cx="0" cy="-28" rx="16" ry="40" fill="rgba(232,180,184,0.5)" transform="rotate(315)"/>
+    <circle cx="0" cy="0" r="12" fill="rgba(201,168,76,0.7)"/>
+  </g></svg>
+</div>
+
+<script>
+const SK='zenBlessing';
+function gd(){try{return JSON.parse(localStorage.getItem(SK))||{}}catch{return{}}}
+function sd(d){localStorage.setItem(SK,JSON.stringify({...gd(),...d}))}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)}
+
+// ===== Web Audio 音效 =====
+let audioCtx=null;
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx}
+
+// 敲钟音效
+function ringBell(){
+  const ctx=getAudio();const t=ctx.currentTime;
+  // 三层泛音模拟寺庙铜钟
+  const freqs=[523.25,659.25,783.99]; // C5 E5 G5
+  freqs.forEach((f,i)=>{
+    const osc=ctx.createOscillator();const gain=ctx.createGain();
+    osc.type='sine';osc.frequency.setValueAtTime(f,t);
+    gain.gain.setValueAtTime(0.15-i*0.03,t);
+    gain.gain.exponentialRampToValueAtTime(0.001,t+4-i);
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.start(t);osc.stop(t+4-i);
+  });
+  toast('晨钟暮鼓 · 消除烦恼');
+}
+
+// 念经音效 - 低频嗡鸣
+function chantSound(){
+  const ctx=getAudio();const t=ctx.currentTime;
+  const freqs=[131,196,262]; // C3 G3 C4 Om
+  freqs.forEach((f,i)=>{
+    const osc=ctx.createOscillator();const gain=ctx.createGain();
+    osc.type='sine';osc.frequency.setValueAtTime(f,t);
+    // 缓慢起声
+    gain.gain.setValueAtTime(0,t);
+    gain.gain.linearRampToValueAtTime(0.08-i*0.015,t+0.8);
+    gain.gain.linearRampToValueAtTime(0.06-i*0.01,t+2.5);
+    gain.gain.exponentialRampToValueAtTime(0.001,t+4);
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.start(t);osc.stop(t+4);
+  });
+}
+
+// 供灯音效 - 清脆叮
+function lampSound(){
+  const ctx=getAudio();const t=ctx.currentTime;
+  const osc=ctx.createOscillator();const gain=ctx.createGain();
+  osc.type='sine';osc.frequency.setValueAtTime(880,t); // A5
+  gain.gain.setValueAtTime(0.1,t);gain.gain.exponentialRampToValueAtTime(0.001,t+1);
+  osc.connect(gain);gain.connect(ctx.destination);osc.start(t);osc.stop(t+1);
+}
+
+// 签到音效
+function checkinSound(){
+  const ctx=getAudio();const t=ctx.currentTime;
+  [660,880].forEach((f,i)=>{
+    const osc=ctx.createOscillator();const gain=ctx.createGain();
+    osc.type='sine';osc.frequency.setValueAtTime(f,t+i*0.15);
+    gain.gain.setValueAtTime(0.08,t+i*0.15);gain.gain.exponentialRampToValueAtTime(0.001,t+i*0.15+0.8);
+    osc.connect(gain);gain.connect(ctx.destination);osc.start(t+i*0.15);osc.stop(t+i*0.15+0.8);
+  });
+}
+
+// ===== 香型 =====
+let selInc='sandalwood';
+function pickIncense(el){document.querySelectorAll('.incense-opt').forEach(e=>e.classList.remove('active'));el.classList.add('active');selInc=el.dataset.type}
+
+// ===== 上香 =====
+const MAX_S=3;
+function offerIncense(){
+  const d=gd();const cur=(d.activeIncense||[]).filter(i=>Date.now()-i.st<i.dur);
+  if(cur.length>=MAX_S){toast('香炉已满');return}
+  cur.push({id:Date.now(),type:selInc,st:Date.now(),dur:300000});
+  d.activeIncense=cur;d.totalInc=(d.totalInc||0)+1;sd(d);
+  renderSticks();startSmoke();updateInfo();
+  chantSound(); // 念经音效
+  toast('阿弥陀佛 · 香已点燃');
+}
+
+function renderSticks(){
+  const d=gd();const cur=(d.activeIncense||[]).filter(i=>Date.now()-i.st<i.dur);
+  if(cur.length!==(d.activeIncense||[]).length){d.activeIncense=cur;sd(d)}
+  const row=document.getElementById('sticksRow');row.innerHTML='';
+  cur.forEach(inc=>{
+    const rem=Math.max(0,1-(Date.now()-inc.st)/inc.dur);
+    const s=document.createElement('div');s.className='stick lit';s.style.height=(48*rem)+'px';
+    if(rem>0){const e=document.createElement('div');e.className='ember';s.appendChild(e)}
+    row.appendChild(s);
+  });
+  const btn=document.getElementById('btnIncense');
+  btn.disabled=cur.length>=MAX_S;btn.textContent=cur.length>=MAX_S?'香炉已满':'请 香';
+  if(cur.length>0)requestAnimationFrame(renderSticks);
+}
+
+// ===== 烟雾 =====
+const cvs=document.getElementById('smokeCanvas'),ctx=cvs.getContext('2d');
+let particles=[],animId=null;
+class P{constructor(x,y,c){this.x=x+(Math.random()-.5)*14;this.y=y;this.vx=(Math.random()-.5)*.2;this.vy=-(Math.random()*.5+.15);this.r=Math.random()*2.5+1;this.a=.25+Math.random()*.15;this.c=c;this.life=1;this.dk=.0015+Math.random()*.002}up(){this.x+=this.vx;this.y+=this.vy;this.vx+=(Math.random()-.5)*.03;this.r+=.02;this.life-=this.dk;this.a*=.998}draw(c){c.beginPath();c.arc(this.x,this.y,this.r,0,Math.PI*2);c.fillStyle=this.c.replace('rgb','rgba').replace(')',`,${this.a*this.life})`);c.fill()}}
+function startSmoke(){if(!animId)drawSmoke()}
+function drawSmoke(){ctx.clearRect(0,0,160,200);const d=gd();const act=(d.activeIncense||[]).filter(i=>Date.now()-i.st<i.dur);const cols={sandalwood:'rgb(180,160,130)',aloeswood:'rgb(140,120,90)',lily:'rgb(200,190,170)'};if(act.length>0)act.forEach((inc,i)=>{const c=cols[inc.type]||cols.sandalwood;const off=(i-(act.length-1)/2)*9;if(Math.random()<.18)particles.push(new P(80+off,180,c))});particles=particles.filter(p=>p.life>0);particles.forEach(p=>{p.up();p.draw(ctx)});if(act.length>0||particles.length>0)animId=requestAnimationFrame(drawSmoke);else animId=null}
+
+// ===== 供灯环（圆弧排列+呼吸+出现动画） =====
+function renderLampRing(){
+  const d=gd();const lamps=d.lamps||{};
+  const ring=document.getElementById('lampRing');ring.innerHTML='';
+  let total=0;Object.values(lamps).forEach(n=>total+=n);
+  const show=Math.min(total,9);
+  const count=Math.max(show,5);
+  // 圆弧分布
+  const spread=160; // 横向展开px
+  for(let i=0;i<count;i++){
+    const l=document.createElement('div');l.className='mini-lamp'+(i<show?'':' empty');
+    if(i===show-1&&show>0)l.classList.add('appear');
+    // 计算位置 - 抛物线弧
+    const t=count>1?i/(count-1):0.5;
+    const x=(t-0.5)*spread;
+    const y=-Math.pow(t-0.5,2)*30; // 弧形上凸
+    l.style.left=`calc(50% + ${x}px - 7px)`;
+    l.style.bottom=`${20-y}px`;
+    l.style.animationDelay=(i*0.15)+'s';
+    l.innerHTML='<div class="glow"></div><div class="flame"></div><div class="base"></div>';
+    ring.appendChild(l);
+  }
+}
+
+// ===== 许愿 =====
+const wTypes=['家人平安','事业顺利','学业有成','身体健康','姻缘美满','财运亨通'];
+let selWType=wTypes[0];
+function initWishTypes(){const g=document.getElementById('wishTypes');wTypes.forEach(t=>{const b=document.createElement('div');b.className='wish-type-btn'+(t===selWType?' sel':'');b.textContent=t;b.onclick=()=>{document.querySelectorAll('.wish-type-btn').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');selWType=t};g.appendChild(b)})}
+function openWishModal(){document.getElementById('wishModal').classList.add('show');document.getElementById('wishInput').value=''}
+function closeWishModal(){document.getElementById('wishModal').classList.remove('show')}
+function submitWish(){const txt=document.getElementById('wishInput').value.trim();if(!txt){toast('请写下心愿');return}const d=gd();const w=d.wishes||[];w.unshift({type:selWType,text:txt,date:new Date().toLocaleDateString('zh-CN')});d.wishes=w;d.totalWish=(d.totalWish||0)+1;sd(d);closeWishModal();updateInfo();toast('心愿已送达')}
+function openWallModal(){const d=gd();const w=d.wishes||[];const pre=[{type:'家人平安',text:'愿家人安康，岁月静好',date:'众善信'},{type:'事业顺利',text:'愿事业通达，步步高升',date:'众善信'},{type:'身体健康',text:'愿身心康泰，无灾无难',date:'众善信'}];const all=[...w,...pre];const list=document.getElementById('wishWallList');list.innerHTML='';all.forEach(v=>{const i=document.createElement('div');i.className='wall-item';i.innerHTML=`<div class="wall-type">${v.type}</div><div class="wall-text">${v.text}</div><div class="wall-date">${v.date}</div>`;list.appendChild(i)});document.getElementById('wallModal').classList.add('show')}
+function closeWallModal(){document.getElementById('wallModal').classList.remove('show')}
+
+// ===== 供灯 =====
+const buddhas=[{id:'guanyin',name:'观音',desc:'大慈大悲'},{id:'maitreya',name:'弥勒',desc:'欢喜自在'},{id:'medicine',name:'药师',desc:'消灾延寿'},{id:'ksitigarbha',name:'地藏',desc:'誓不成佛'},{id:'manjushri',name:'文殊',desc:'般若智慧'},{id:'caishen',name:'财神',desc:'福德圆满'}];
+let selBud='guanyin';
+function initLampBuddhas(){const g=document.getElementById('lampBuddhas');buddhas.forEach((b,i)=>{const c=document.createElement('div');c.className='buddha-card'+(i===0?' sel':'');c.dataset.id=b.id;c.innerHTML=`<div class="buddha-card-name">${b.name}</div><div class="buddha-card-desc">${b.desc}</div>`;c.onclick=()=>{document.querySelectorAll('.buddha-card').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');selBud=b.id};g.appendChild(c)})}
+function openLampModal(){document.getElementById('lampModal').classList.add('show')}
+function closeLampModal(){document.getElementById('lampModal').classList.remove('show')}
+function submitLamp(){const d=gd();const l=d.lamps||{};l[selBud]=(l[selBud]||0)+1;d.lamps=l;d.totalLamp=(d.totalLamp||0)+1;sd(d);closeLampModal();renderLampRing();updateInfo();lampSound();toast('供灯功德 · 光明无量')}
+
+// ===== 签到 =====
+function checkin(){const d=gd();const today=new Date().toDateString();if(d.lastCheckin===today){toast('今日已签到');return}const ck=(d.checkins||[]);ck.push(today);d.checkins=ck;d.lastCheckin=today;const prev=ck.filter(c=>c!==today);d.streak=(prev.length>0&&prev[prev.length-1]===new Date(Date.now()-864e5).toDateString())?(d.streak||0)+1:1;d.maxStreak=Math.max(d.maxStreak||0,d.streak);sd(d);updateInfo();showLotus();checkinSound();toast('签到功德 +1')}
+function showLotus(){const l=document.getElementById('lotusFx');l.classList.add('show');setTimeout(()=>l.classList.remove('show'),1300)}
+function updateInfo(){const d=gd();document.getElementById('nInc').textContent=d.totalInc||0;document.getElementById('nWish').textContent=d.totalWish||0;document.getElementById('nLamp').textContent=d.totalLamp||0;document.getElementById('nStreak').textContent=d.streak||0;const checked=d.lastCheckin===new Date().toDateString();document.getElementById('streakLabel').textContent=checked?'天已签':'天签到'}
+
+// ===== 节气 & 佛诞日 =====
+const solarTerms=[
+  {m:1,d:6,name:'小寒',desc:'天寒地冻，宜静心修行'},{m:1,d:20,name:'大寒',desc:'岁末寒极，静待春来'},
+  {m:2,d:4,name:'立春',desc:'万物复苏，吉祥如意'},{m:2,d:19,name:'雨水',desc:'甘露润物，福泽绵长'},
+  {m:3,d:6,name:'惊蛰',desc:'春雷始鸣，破迷开悟'},{m:3,d:21,name:'春分',desc:'昼夜均等，身心调和'},
+  {m:4,d:5,name:'清明',desc:'追思先人，慎终追远'},{m:4,d:20,name:'谷雨',desc:'雨生百谷，普度众生'},
+  {m:5,d:6,name:'立夏',desc:'夏日初长，精进不退'},{m:5,d:21,name:'小满',desc:'功德渐满，持之以恒'},
+  {m:6,d:6,name:'芒种',desc:'勤修善种，必有收成'},{m:6,d:21,name:'夏至',desc:'日长之极，光明无量'},
+  {m:7,d:7,name:'小暑',desc:'心静自然凉'},{m:7,d:23,name:'大暑',desc:'暑热炼心，安忍不动'},
+  {m:8,d:7,name:'立秋',desc:'金风送爽，福慧双修'},{m:8,d:23,name:'处暑',desc:'暑去凉来，菩提渐熟'},
+  {m:9,d:8,name:'白露',desc:'露凝为霜，修心净行'},{m:9,d:23,name:'秋分',desc:'阴阳相半，中道圆融'},
+  {m:10,d:8,name:'寒露',desc:'寒露凝珠，戒定慧生'},{m:10,d:23,name:'霜降',desc:'霜降天寒，慈悲暖心'},
+  {m:11,d:7,name:'立冬',desc:'冬藏万物，积蓄福德'},{m:11,d:22,name:'小雪',desc:'瑞雪兆丰，清净无染'},
+  {m:12,d:7,name:'大雪',desc:'大雪无痕，心包太虚'},{m:12,d:22,name:'冬至',desc:'一阳初生，否极泰来'},
+];
+const buddhaDays=[
+  {m:1,d:1,name:'弥勒菩萨圣诞',desc:'新年伊始，欢喜吉祥'},
+  {m:2,d:15,name:'佛陀涅槃日',desc:'追思佛恩，发菩提心'},
+  {m:3,d:8,name:'释迦牟尼佛出家日',desc:'舍俗修道，大愿成就'},
+  {m:4,d:8,name:'释迦牟尼佛圣诞',desc:'佛诞吉日，普天同庆'},
+  {m:4,d:15,name:'佛圆满日',desc:'吉祥圆满，佛光普照'},
+  {m:6,d:3,name:'韦驮菩萨圣诞',desc:'护法韦驮，降魔伏怨'},
+  {m:7,d:13,name:'大势至菩萨圣诞',desc:'大势至力，接引众生'},
+  {m:7,d:15,name:'佛欢喜日',desc:'僧自恣日，诸佛欢喜'},
+  {m:7,d:30,name:'地藏菩萨圣诞',desc:'地狱不空，誓不成佛'},
+  {m:9,d:19,name:'观世音菩萨出家日',desc:'大慈大悲，寻声救苦'},
+  {m:9,d:30,name:'药师佛圣诞',desc:'消灾延寿，身心安康'},
+  {m:11,d:17,name:'阿弥陀佛圣诞',desc:'阿弥陀佛，接引西方'},
+  {m:12,d:8,name:'释迦牟尼佛成道日',desc:'佛陀悟道，法轮常转'},
+];
+
+function getFestivalToday(){
+  const now=new Date();const m=now.getMonth()+1;const d=now.getDate();
+  // 检查佛诞日
+  const bd=buddhaDays.find(f=>f.m===m&&f.d===d);
+  if(bd)return{type:'buddha',...bd};
+  // 检查节气（±1天）
+  const st=solarTerms.find(f=>f.m===m&&Math.abs(f.d-d)<=1);
+  if(st)return{type:'solar',...st};
+  return null;
+}
+
+function initFestivalBar(){
+  const fest=getFestivalToday();
+  const bar=document.getElementById('festBar');
+  if(fest){
+    const icon=fest.type==='buddha'?'🪷':'🍃';
+    bar.innerHTML=`<span class="fest-icon">${icon}</span>${fest.name} · ${fest.desc}`;
+    bar.classList.remove('hidden');
+  }else{
+    bar.classList.add('hidden');
+  }
+}
+
+function openFestModal(){
+  const now=new Date();const m=now.getMonth()+1;
+  // 当月及近2个月的节气和佛诞日
+  const events=[];
+  const months=[m-1,m,m+1].map(x=>x===0?12:x===13?1:x);
+  solarTerms.filter(f=>months.includes(f.m)).forEach(f=>events.push({...f,type:'solar'}));
+  buddhaDays.filter(f=>months.includes(f.m)).forEach(f=>events.push({...f,type:'buddha'}));
+  events.sort((a,b)=>a.m===b.m?a.d-b.d:a.m-b.m);
+
+  const content=document.getElementById('festContent');
+  content.innerHTML='';
+  if(events.length===0){content.innerHTML='<div style="text-align:center;color:var(--warm-dim);opacity:.3;padding:20px">暂无近期节日</div>'}
+  events.forEach(e=>{
+    const card=document.createElement('div');card.className='fest-card';
+    const icon=e.type==='buddha'?'🪷':'🍃';
+    card.innerHTML=`<div class="fest-name">${icon} ${e.name}</div><div class="fest-desc">${e.desc}</div><div class="fest-date">${e.m}月${e.d}日</div>`;
+    content.appendChild(card);
+  });
+  document.getElementById('festModal').classList.add('show');
+}
+function closeFestModal(){document.getElementById('festModal').classList.remove('show')}
+
+// ===== 分享 =====
+function openShareModal(){document.getElementById('shareModal').classList.add('show')}
+function closeShareModal(){document.getElementById('shareModal').classList.remove('show')}
+function shareCopy(){
+  const url=location.href;
+  if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>toast('链接已复制'))}
+  else{const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('链接已复制')}
+  closeShareModal();
+}
+function shareWechat(){
+  toast('请截图后分享到微信');
+  closeShareModal();
+}
+function sharePoster(){
+  // 生成简单祈福海报（Canvas）
+  const c=document.createElement('canvas');c.width=750;c.height=1334;
+  const x=c.getContext('2d');
+  // 背景
+  const grd=x.createLinearGradient(0,0,0,1334);
+  grd.addColorStop(0,'#0E0B08');grd.addColorStop(0.5,'#1C1610');grd.addColorStop(1,'#0E0B08');
+  x.fillStyle=grd;x.fillRect(0,0,750,1334);
+  // 标题
+  x.fillStyle='#C9A84C';x.font='300 48px "Noto Serif SC",serif';x.textAlign='center';
+  x.fillText('禅心祈福',375,300);
+  // 祈福语
+  x.fillStyle='rgba(245,230,200,0.5)';x.font='300 28px "Noto Serif SC",serif';
+  x.fillText('心香一炷 · 祈愿众生',375,360);
+  // 统计
+  const d=gd();
+  x.fillStyle='#C9A84C';x.font='300 36px "Noto Serif SC",serif';
+  x.fillText(`上香${d.totalInc||0} · 许愿${d.totalWish||0} · 供灯${d.totalLamp||0}`,375,500);
+  // 署名
+  x.fillStyle='rgba(245,230,200,0.2)';x.font='300 20px "Noto Serif SC",serif';
+  x.fillText('扫码或打开链接，一起祈福',375,1200);
+  // 下载
+  c.toBlob(blob=>{
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.href=url;a.download='禅心祈福.png';a.click();URL.revokeObjectURL(url);
+    toast('海报已保存');
+  },'image/png');
+  closeShareModal();
+}
+
+// ===== 飘尘 =====
+function initDust(){const l=document.getElementById('dustLayer');const count=window.innerWidth>768?16:8;for(let i=0;i<count;i++){const d=document.createElement('div');d.className='dust';d.style.left=Math.random()*100+'%';d.style.top=(60+Math.random()*40)+'%';d.style.width=d.style.height=(0.5+Math.random()*1.5)+'px';d.style.animationDuration=(8+Math.random()*12)+'s';d.style.animationDelay=Math.random()*10+'s';l.appendChild(d)}}
+
+// 关闭弹窗
+['wishModal','lampModal','wallModal','shareModal','festModal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)e.target.classList.remove('show')});
+});
+
+// ===== 初始化 =====
+initWishTypes();initLampBuddhas();initDust();initFestivalBar();
+renderSticks();renderLampRing();updateInfo();
+const _d=gd();
+if((_d.activeIncense||[]).filter(i=>Date.now()-i.st<i.dur).length>0)startSmoke();
+</script>
+</body>
+</html>
