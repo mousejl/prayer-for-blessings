@@ -200,12 +200,11 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   /* 佛像/香炉绝对定位，可重叠 */
   .altar-center{width:100%;height:480px}
   .buddha-wrap{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
-  .burner-combo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
+  .burner-combo{position:absolute;top:405px;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
   /* 佛像 */
   .buddha-icon{width:270px;height:405px;margin-bottom:8px}
   .buddha-light{width:720px;height:720px}
-  /* 香炉整体回位 */
-  .burner-combo{margin-top:-160px}
+  /* 香炉 */
   .burner{width:70px;height:28px}
   .burner::before{left:6px;right:6px;height:5px;top:-2px}
   .burner-char{font-size:15px}
@@ -258,10 +257,9 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 @media screen and (max-width:360px){
   .title{font-size:26px;letter-spacing:6px}
   .tagline{font-size:14px}
-  .altar-center{width:100%;height:400px}
+  .altar-center{width:100%;height:420px}
   .buddha-wrap{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
-  .burner-combo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
-  .burner-combo{margin-top:-120px}
+  .burner-combo{position:absolute;top:315px;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
   .buddha-icon{width:210px;height:315px;margin-bottom:8px}
   .buddha-light{width:560px;height:560px}
   .burner{width:62px;height:26px}
@@ -292,10 +290,9 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   .title{font-size:16px;letter-spacing:6px}
   .tagline{display:none}
   .ornament{display:none}
-  .altar-center{width:100%;height:320px}
+  .altar-center{width:100%;height:380px}
   .buddha-wrap{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
-  .burner-combo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
-  .burner-combo{margin-top:-80px}
+  .burner-combo{position:absolute;top:240px;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
   .buddha-icon{width:160px;height:240px;margin-bottom:8px}
   .buddha-light{width:420px;height:420px}
   .burner{width:48px;height:20px}
@@ -314,10 +311,9 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 /* ===== 平板端适配 (431px ~ 768px) ===== */
 @media screen and (min-width:431px) and (max-width:768px){
   .title{font-size:24px;letter-spacing:10px}
-  .altar-center{width:100%;height:480px}
+  .altar-center{width:100%;height:600px}
   .buddha-wrap{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
-  .burner-combo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
-  .burner-combo{margin-top:-160px}
+  .burner-combo{position:absolute;top:405px;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
   .buddha-icon{width:270px;height:405px;margin-bottom:8px}
   .buddha-light{width:720px;height:720px}
   .burner{width:70px;height:28px}
@@ -343,15 +339,14 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   .ornament{margin-top:10px}
   .ornament-line{width:60px}
   /* 祭坛：绝对定位重叠布局 */
-  .altar-center{width:100%;height:560px}
+  .altar-center{width:100%;height:700px}
   .buddha-wrap{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
-  .burner-combo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
-  .burner-combo{margin-top:-180px}
-  /* 佛像放大 */
-  .buddha-icon{width:320px;height:480px;margin-bottom:14px;filter:drop-shadow(0 0 35px rgba(201,168,76,0.2))}
-  .buddha-light{width:860px;height:860px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,rgba(201,168,76,0.04) 40%,transparent 70%)}
-  /* 香炉放大 */
-  .burner{width:80px;height:34px;border-radius:5px 5px 16px 16px}
+  .burner-combo{position:absolute;top:405px;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
+  /* 佛像 */
+  .buddha-icon{width:270px;height:405px;margin-bottom:8px;filter:drop-shadow(0 0 35px rgba(201,168,76,0.2))}
+  .buddha-light{width:720px;height:720px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,rgba(201,168,76,0.04) 40%,transparent 70%)}
+  /* 香炉 */
+  .burner{width:70px;height:28px;border-radius:4px 4px 12px 12px}
   .burner::before{height:6px;top:-4px}
   .burner-char{font-size:13px}
   .stick.lit{height:56px}
@@ -392,14 +387,14 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 
 /* 超宽屏(>1400px)进一步放大氛围 */
 @media screen and (min-width:1400px){
-  .altar-center{height:640px}
-  .buddha-icon{width:420px;height:630px;margin-bottom:16px;filter:drop-shadow(0 0 40px rgba(201,168,76,0.25))}
-  .buddha-light{width:1100px;height:1100px}
-  .burner-combo{margin-top:-220px}
-  .stick.lit{height:62px}
-  .sticks-row{height:64px;gap:10px}
-  #smokeCanvas{width:260px;height:380px}
-  .lamp-ring{width:300px;height:65px;margin-top:16px}
+  .altar-center{height:700px}
+  .buddha-icon{width:270px;height:405px;margin-bottom:8px;filter:drop-shadow(0 0 40px rgba(201,168,76,0.25))}
+  .buddha-light{width:720px;height:720px}
+  .burner-combo{top:405px !important}
+  .stick.lit{height:50px}
+  .sticks-row{height:52px;gap:8px}
+  #smokeCanvas{width:150px;height:280px}
+  .lamp-ring{width:220px;height:55px;margin-top:10px}
   .title{font-size:34px;letter-spacing:20px}
   .ambient-glow{width:500px;height:500px}
 }
