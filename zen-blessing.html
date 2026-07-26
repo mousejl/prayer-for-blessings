@@ -1074,17 +1074,20 @@ function playMantra(ctx,master){
 function startMusic(){
   if(musicPlaying)return;
   const ctx=getAudio();
+  // 浏览器策略：用户交互后才能播放音频
+  if(ctx.state==='suspended')ctx.resume();
   musicGain=ctx.createGain();
   const vol=document.getElementById('musicVol').value/100;
   musicGain.gain.value=vol*0.6;
   musicGain.connect(ctx.destination);
 
   musicTimers=[];
+  musicPlaying=true; // 必须在播放函数之前设置，scheduleBeep 依赖此标志
+
   if(currentTrack==='heart')musicNodes=playHeart(ctx,musicGain);
   else if(currentTrack==='compassion')musicNodes=playCompassion(ctx,musicGain);
   else if(currentTrack==='mantra')musicNodes=playMantra(ctx,musicGain);
 
-  musicPlaying=true;
   document.getElementById('musicToggle').classList.add('playing');
   document.getElementById('musicToggle').innerHTML='&#9646;&#9646;';
   const d=gd();d.musicOn=true;d.musicTrack=currentTrack;sd(d);
