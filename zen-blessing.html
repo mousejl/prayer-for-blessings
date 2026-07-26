@@ -104,7 +104,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 .music-bar{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
 .music-toggle{width:28px;height:28px;border-radius:50%;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);color:var(--gold);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;font-size:12px;flex-shrink:0;position:relative}
 .music-ring{position:absolute;inset:0;width:100%;height:100%}
-.music-prog{transition:stroke-dashoffset .3s ease}
+.music-prog{transition:stroke-dashoffset .3s ease;filter:drop-shadow(0 0 3px rgba(201,168,76,0.6))}
 .music-icon{position:relative;z-index:1}
 .music-toggle:hover{border-color:var(--gold);box-shadow:0 0 10px rgba(201,168,76,0.15)}
 .music-toggle.playing{border-color:var(--gold);background:rgba(201,168,76,0.12);animation:musicPulse 2s ease-in-out infinite}
@@ -457,7 +457,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 
     <div class="music-bar">
       <button class="music-toggle" id="musicToggle" onclick="toggleMusic()" title="背景音乐">
-        <svg class="music-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="none" stroke="rgba(201,168,76,0.15)" stroke-width="2"/><circle class="music-prog" cx="18" cy="18" r="16" fill="none" stroke="var(--gold)" stroke-width="2" stroke-dasharray="100.53" stroke-dashoffset="100.53" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg>
+        <svg class="music-ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" fill="none" stroke="rgba(201,168,76,0.15)" stroke-width="2"/><circle class="music-prog" cx="18" cy="18" r="16" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-dasharray="100.53" stroke-dashoffset="100.53" stroke-linecap="round" transform="rotate(-90 18 18)"/></svg>
         <span class="music-icon">&#9654;</span>
       </button>
       <div class="music-tracks" id="musicTracks">
