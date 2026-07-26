@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: 'c3fd8eb0-e458-4687-a7a1-588b17329320'
-  PropagateID: 'c3fd8eb0-e458-4687-a7a1-588b17329320'
-  ReservedCode1: 'f133bc9e-59fc-48dc-a5b3-6985a77a4a18'
-  ReservedCode2: 'f133bc9e-59fc-48dc-a5b3-6985a77a4a18'
+  ProduceID: '17bd342d-a477-4686-9296-0ae822795052'
+  PropagateID: '17bd342d-a477-4686-9296-0ae822795052'
+  ReservedCode1: 'cff1987b-ddb0-494b-9a9c-ddda49058391'
+  ReservedCode2: 'cff1987b-ddb0-494b-9a9c-ddda49058391'
 ---
 
 # 禅心祈福 - 布局参数基线
@@ -29,10 +29,11 @@ AIGC:
 ## 手机端（max-width:430px）— 当前生效
 | 元素 | 参数 |
 |------|------|
-| top-area | padding-bottom:4px |
+| altar-center | width:100%, height:480px, position:relative |
+| buddha-wrap | position:absolute, top:0, left:50%, transform:translateX(-50%), z-index:2 |
 | buddha-icon | width:270px, height:405px, margin-bottom:8px |
 | buddha-light | width:720px, height:720px |
-| burner-combo | margin-top:-270px |
+| burner-combo | position:absolute, bottom:0, left:50%, transform:translateX(-50%), z-index:3, margin-top:-160px |
 | burner | width:70px, height:28px |
 | stick.lit | height:50px |
 | sticks-row | height:52px, gap:8px |
