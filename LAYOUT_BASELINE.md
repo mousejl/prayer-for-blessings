@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '16637a33-16e2-4eb5-bf85-b5743b658f74'
-  PropagateID: '16637a33-16e2-4eb5-bf85-b5743b658f74'
-  ReservedCode1: '72fd7654-f161-4e7c-8557-c110901e741a'
-  ReservedCode2: '72fd7654-f161-4e7c-8557-c110901e741a'
+  ProduceID: '4e9eb483-1043-40de-ba2d-9533c0fe5ef9'
+  PropagateID: '4e9eb483-1043-40de-ba2d-9533c0fe5ef9'
+  ReservedCode1: 'b53f57ed-92ad-434e-9d24-5fed87426d2d'
+  ReservedCode2: 'b53f57ed-92ad-434e-9d24-5fed87426d2d'
 ---
 
 # 禅心祈福 - 布局参数基线
@@ -22,7 +22,7 @@ AIGC:
 | sticks-row | height:50px, gap:7px, margin-bottom:-2px |
 | stick.lit | height:48px |
 | burner | width:64px, height:28px |
-| smokeCanvas | width:160px, height:200px, bottom:26px |
+| smokeCanvas | width:160px, height:200px, bottom:26px, 粒子y=190 |
 | lamp-ring | width:200px, height:50px, margin-top:8px |
 | mini-lamp | width:14px, height:20px |
 
@@ -37,7 +37,7 @@ AIGC:
 | burner | width:70px, height:28px |
 | stick.lit | height:50px |
 | sticks-row | height:52px, gap:8px |
-| smokeCanvas | position:absolute(在altar-center内), bottom:100px, left:50%, width:150px, height:200px |
+| smokeCanvas | position:absolute(在altar-center内), bottom:100px, left:50%, width:150px, height:200px, 粒子y=190 |
 | lamp-ring | width:220px, height:55px, margin-top:10px |
 | mini-lamp | width:14px, height:22px |
 
