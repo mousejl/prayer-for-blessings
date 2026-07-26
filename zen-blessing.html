@@ -258,7 +258,12 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 @media screen and (max-width:360px){
   .title{font-size:26px;letter-spacing:6px}
   .tagline{font-size:14px}
-  .buddha-icon{width:80px;height:120px;margin-bottom:6px}
+  .altar-center{width:100%;height:400px}
+  .buddha-wrap{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
+  .burner-combo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
+  .burner-combo{margin-top:-120px}
+  .buddha-icon{width:210px;height:315px;margin-bottom:8px}
+  .buddha-light{width:560px;height:560px}
   .burner{width:62px;height:26px}
   .sticks-row{height:44px;gap:7px}
   .stick.lit{height:44px}
@@ -287,8 +292,12 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   .title{font-size:16px;letter-spacing:6px}
   .tagline{display:none}
   .ornament{display:none}
-  .buddha-icon{width:48px;height:72px;margin-bottom:2px}
-  .buddha-light{width:120px;height:120px}
+  .altar-center{width:100%;height:320px}
+  .buddha-wrap{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
+  .burner-combo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
+  .burner-combo{margin-top:-80px}
+  .buddha-icon{width:160px;height:240px;margin-bottom:8px}
+  .buddha-light{width:420px;height:420px}
   .burner{width:48px;height:20px}
   .sticks-row{height:30px;gap:5px}
   .stick.lit{height:28px}
@@ -304,30 +313,43 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 
 /* ===== 平板端适配 (431px ~ 768px) ===== */
 @media screen and (min-width:431px) and (max-width:768px){
-  .title{font-size:22px;letter-spacing:10px}
-  .buddha-icon{width:72px;height:108px;margin-bottom:7px}
-  .buddha-light{width:200px;height:200px}
-  .burner{width:60px;height:26px}
-  .stick.lit{height:44px}
-  .sticks-row{height:46px;gap:6px}
-  #smokeCanvas{width:140px;height:250px}
-  .lamp-ring{width:180px;height:46px;margin-top:7px}
+  .title{font-size:24px;letter-spacing:10px}
+  .altar-center{width:100%;height:480px}
+  .buddha-wrap{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
+  .burner-combo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
+  .burner-combo{margin-top:-160px}
+  .buddha-icon{width:270px;height:405px;margin-bottom:8px}
+  .buddha-light{width:720px;height:720px}
+  .burner{width:70px;height:28px}
+  .stick.lit{height:50px}
+  .sticks-row{height:52px;gap:8px}
+  #smokeCanvas{width:150px;height:280px}
+  .lamp-ring{width:220px;height:55px;margin-top:10px}
+  .mini-lamp{width:14px;height:22px}
+  .mini-lamp .flame{width:7px;height:9px}
+  .mini-lamp .base{width:9px;height:10px}
+  .mini-lamp .glow{top:-6px;left:-7px;width:28px;height:28px}
   .main-actions{gap:8px}
-  .btn-incense{padding:7px 24px;font-size:12px}
-  .btn-sub{padding:6px 16px;font-size:11px}
+  .btn-incense{padding:7px 24px;font-size:13px}
+  .btn-sub{padding:6px 16px;font-size:12px}
 }
 
 /* ===== PC端优化 (>768px) ===== */
 @media screen and (min-width:769px){
-  /* 标题区放大 */
+  /* 标题区 */
   .top-area{padding:32px 0 12px}
   .title{font-size:30px;letter-spacing:16px}
-  .tagline{font-size:12px;margin-top:8px;opacity:.6}
+  .tagline{font-size:13px;margin-top:8px;opacity:.6}
   .ornament{margin-top:10px}
   .ornament-line{width:60px}
-  /* 佛像放大 + 光晕增强 */
-  .buddha-icon{width:120px;height:180px;margin-bottom:14px;filter:drop-shadow(0 0 35px rgba(201,168,76,0.2))}
-  .buddha-light{width:320px;height:320px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,rgba(201,168,76,0.04) 40%,transparent 70%)}
+  /* 祭坛：绝对定位重叠布局 */
+  .altar-center{width:100%;height:560px}
+  .buddha-wrap{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:2}
+  .burner-combo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);z-index:3;margin-top:0}
+  .burner-combo{margin-top:-180px}
+  /* 佛像放大 */
+  .buddha-icon{width:320px;height:480px;margin-bottom:14px;filter:drop-shadow(0 0 35px rgba(201,168,76,0.2))}
+  .buddha-light{width:860px;height:860px;background:radial-gradient(circle,rgba(201,168,76,0.12) 0%,rgba(201,168,76,0.04) 40%,transparent 70%)}
   /* 香炉放大 */
   .burner{width:80px;height:34px;border-radius:5px 5px 16px 16px}
   .burner::before{height:6px;top:-4px}
@@ -341,11 +363,11 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   .mini-lamp .flame{width:8px;height:10px}
   .mini-lamp .base{width:10px;height:12px}
   .mini-lamp .glow{top:-8px;left:-10px;width:38px;height:38px}
-  /* 香型放大 */
+  /* 香型 */
   .incense-select{gap:24px}
-  .incense-name{font-size:12px}
+  .incense-name{font-size:13px}
   .incense-dot{width:10px;height:10px}
-  /* 按钮放大 */
+  /* 按钮 */
   .bottom-area{padding:0 24px 24px;gap:14px}
   .main-actions{gap:14px}
   .btn-incense{padding:10px 36px;font-size:15px;letter-spacing:6px;border-radius:24px}
@@ -353,11 +375,11 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   .btn-bell{height:40px;padding:0 16px;gap:4px;border-radius:20px}
   .btn-bell span:first-child{font-size:16px}
   .btn-bell span:last-child{font-size:11px}
-  /* 信息栏放大 */
+  /* 信息栏 */
   .info-bar{gap:28px}
   .info-item{font-size:12px;gap:5px}
   .info-num{font-size:15px}
-  /* 弹窗放大 */
+  /* 弹窗 */
   .modal-card{max-width:380px;padding:30px 28px;border-radius:20px}
   .modal-heading{font-size:18px;letter-spacing:8px;margin-bottom:24px}
   .wish-type-btn{font-size:13px;padding:12px 4px}
@@ -365,14 +387,19 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   .buddha-card-name{font-size:14px}
   .buddha-card-desc{font-size:10px}
   .wish-textarea{font-size:13px;padding:12px}
-  /* toast 放大 */
   .toast{font-size:13px;padding:9px 24px}
 }
 
 /* 超宽屏(>1400px)进一步放大氛围 */
 @media screen and (min-width:1400px){
-  .buddha-icon{width:140px;height:210px;margin-bottom:16px;filter:drop-shadow(0 0 40px rgba(201,168,76,0.25))}
-  .buddha-light{width:360px;height:360px}
+  .altar-center{height:640px}
+  .buddha-icon{width:420px;height:630px;margin-bottom:16px;filter:drop-shadow(0 0 40px rgba(201,168,76,0.25))}
+  .buddha-light{width:1100px;height:1100px}
+  .burner-combo{margin-top:-220px}
+  .stick.lit{height:62px}
+  .sticks-row{height:64px;gap:10px}
+  #smokeCanvas{width:260px;height:380px}
+  .lamp-ring{width:300px;height:65px;margin-top:16px}
   .title{font-size:34px;letter-spacing:20px}
   .ambient-glow{width:500px;height:500px}
 }
