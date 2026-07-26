@@ -183,11 +183,11 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   /* 安全区 */
   .top-area{padding-top:max(24px,env(safe-area-inset-top))}
   .bottom-area{padding-bottom:max(16px,env(safe-area-inset-bottom))}
-  .festival-bar{padding-top:max(6px,env(safe-area-inset-top))}
+  .festival-bar{padding-top:max(6px,env(safe-area-inset-top));font-size:13px}
   /* 整体紧凑 */
   .top-area{padding-bottom:4px}
-  .title{font-size:22px;letter-spacing:8px}
-  .tagline{font-size:11px;margin-top:2px}
+  .title{font-size:26px;letter-spacing:8px}
+  .tagline{font-size:13px;margin-top:2px}
   .ornament{margin-top:4px}
   /* 佛像缩小 */
   .buddha-icon{width:64px;height:96px;margin-bottom:6px}
@@ -195,7 +195,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   /* 香炉缩小 */
   .burner{width:56px;height:24px}
   .burner::before{left:5px;right:5px;height:4px;top:-2px}
-  .burner-char{font-size:11px}
+  .burner-char{font-size:13px}
   .stick.lit{height:40px}
   .sticks-row{height:42px;gap:6px}
   #smokeCanvas{width:120px;height:160px;bottom:22px}
@@ -207,43 +207,44 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   .mini-lamp .glow{top:-5px;left:-6px;width:24px;height:24px}
   /* 香型间距 */
   .incense-select{gap:12px}
-  .incense-name{font-size:11px}
-  .incense-dot{width:7px;height:7px}
+  .incense-name{font-size:14px}
+  .incense-dot{width:8px;height:8px}
   /* 按钮行紧凑 */
   .main-actions{gap:6px;flex-wrap:wrap;justify-content:center}
-  .btn-incense{padding:7px 20px;font-size:14px;letter-spacing:3px}
-  .btn-sub{padding:6px 14px;font-size:12px;letter-spacing:1px}
-  .btn-bell{padding:0 10px;height:30px;gap:1px}
-  .btn-bell span:last-child{font-size:10px}
+  .btn-incense{padding:9px 24px;font-size:16px;letter-spacing:3px}
+  .btn-sub{padding:8px 16px;font-size:14px;letter-spacing:1px}
+  .btn-bell{padding:0 12px;height:34px;gap:2px}
+  .btn-bell span:last-child{font-size:12px}
   /* 底部信息栏 */
   .info-bar{gap:12px}
-  .info-item{font-size:11px;gap:2px}
-  .info-num{font-size:13px}
+  .info-item{font-size:13px;gap:3px}
+  .info-num{font-size:15px}
   /* 弹窗内文字 */
-  .modal-heading{font-size:16px;letter-spacing:4px}
-  .modal-btn{font-size:13px}
-  .wish-type-btn{font-size:12px}
-  .wish-textarea{font-size:13px}
-  .buddha-card-name{font-size:13px}
-  .buddha-card-desc{font-size:10px}
-  .wall-type{font-size:10px}
-  .wall-text{font-size:12px}
-  .wall-date{font-size:10px}
-  .fest-tab{font-size:12px}
-  .fest-group-title{font-size:11px}
-  .fest-row-name{font-size:14px}
-  .fest-row-desc{font-size:11px}
-  .fest-row-date{font-size:11px}
-  .share-label{font-size:13px}
-  .share-desc{font-size:10px}
-  .toast{font-size:12px}
-  .music-track{font-size:10px}
+  .modal-heading{font-size:18px;letter-spacing:4px}
+  .modal-btn{font-size:15px}
+  .wish-type-btn{font-size:14px}
+  .wish-textarea{font-size:15px}
+  .buddha-card-name{font-size:14px}
+  .buddha-card-desc{font-size:12px}
+  .wall-type{font-size:12px}
+  .wall-text{font-size:14px}
+  .wall-date{font-size:12px}
+  .fest-tab{font-size:14px}
+  .fest-group-title{font-size:13px}
+  .fest-row-name{font-size:16px}
+  .fest-row-desc{font-size:13px}
+  .fest-row-date{font-size:13px}
+  .share-label{font-size:15px}
+  .share-desc{font-size:12px}
+  .toast{font-size:14px}
+  .music-track{font-size:12px}
+  .music-toggle{width:32px;height:32px;font-size:14px}
 }
 
 /* 小屏兜底（iPhone SE / 320px） */
 @media screen and (max-width:360px){
-  .title{font-size:20px;letter-spacing:6px}
-  .tagline{font-size:10px}
+  .title{font-size:22px;letter-spacing:6px}
+  .tagline{font-size:12px}
   .buddha-icon{width:56px;height:84px;margin-bottom:4px}
   .burner{width:50px;height:22px}
   .sticks-row{height:36px;gap:5px}
@@ -251,20 +252,20 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   #smokeCanvas{width:100px;height:140px;bottom:18px}
   .lamp-ring{width:140px;height:38px;margin-top:4px}
   .main-actions{gap:5px}
-  .btn-incense{padding:6px 16px;font-size:13px}
-  .btn-sub{padding:5px 10px;font-size:11px}
-  .btn-bell{padding:0 8px;height:28px}
+  .btn-incense{padding:7px 18px;font-size:15px}
+  .btn-sub{padding:6px 12px;font-size:13px}
+  .btn-bell{padding:0 10px;height:32px}
   .info-bar{gap:8px}
-  .info-item{font-size:10px}
-  .info-num{font-size:12px}
+  .info-item{font-size:12px}
+  .info-num{font-size:14px}
   .incense-select{gap:10px}
-  .incense-name{font-size:10px}
+  .incense-name{font-size:13px}
   .modal-card{padding:20px 16px}
-  .modal-heading{font-size:15px;letter-spacing:4px}
-  .modal-btn{font-size:12px}
+  .modal-heading{font-size:17px;letter-spacing:4px}
+  .modal-btn{font-size:14px}
   .wish-types,.lamp-modal-buddhas{gap:4px}
-  .wish-type-btn{font-size:11px}
-  .wish-textarea{font-size:12px}
+  .wish-type-btn{font-size:13px}
+  .wish-textarea{font-size:14px}
 }
 
 /* 横屏手机适配 */
