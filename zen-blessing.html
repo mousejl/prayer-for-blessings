@@ -35,9 +35,11 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 .ornament-dot{width:3px;height:3px;border-radius:50%;background:var(--gold);opacity:.3}
 
 /* 祭坛 */
-.altar-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;width:100%;min-height:0}
-.buddha-light{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.06) 0%,rgba(201,168,76,0.02) 40%,transparent 70%);animation:bLightPulse 5s ease-in-out infinite;pointer-events:none}
-@keyframes bLightPulse{0%,100%{transform:translate(-50%,-60%) scale(1);opacity:.8}50%{transform:translate(-50%,-60%) scale(1.1);opacity:1}}
+.altar-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;width:100%;min-height:0;overflow:hidden}
+.altar-center{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.buddha-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+.buddha-light{position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.06) 0%,rgba(201,168,76,0.02) 40%,transparent 70%);animation:bLightPulse 5s ease-in-out infinite;pointer-events:none}
+@keyframes bLightPulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.1);opacity:1}}
 
 /* 精细佛像SVG */
 .buddha-icon{width:80px;height:120px;position:relative;z-index:2;margin-bottom:8px;color:var(--gold);filter:drop-shadow(0 0 20px rgba(201,168,76,0.12))}
@@ -189,22 +191,22 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   .title{font-size:30px;letter-spacing:8px}
   .tagline{font-size:15px;margin-top:2px}
   .ornament{margin-top:4px}
-  /* 佛像放大 */
-  .buddha-icon{width:160px;height:240px;margin-bottom:14px}
-  .buddha-light{width:420px;height:420px}
-  /* 香炉放大 */
-  .burner{width:100px;height:40px}
-  .burner::before{left:8px;right:8px;height:6px;top:-3px}
-  .burner-char{font-size:18px}
-  .stick.lit{height:70px}
-  .sticks-row{height:72px;gap:12px}
-  #smokeCanvas{width:220px;height:280px;bottom:34px}
-  /* 供灯环放大 */
-  .lamp-ring{width:300px;height:76px;margin-top:16px}
-  .mini-lamp{width:20px;height:30px}
-  .mini-lamp .flame{width:10px;height:12px}
-  .mini-lamp .base{width:12px;height:14px}
-  .mini-lamp .glow{top:-10px;left:-10px;width:40px;height:40px}
+  /* 佛像 */
+  .buddha-icon{width:90px;height:135px;margin-bottom:8px}
+  .buddha-light{width:240px;height:240px}
+  /* 香炉 */
+  .burner{width:70px;height:28px}
+  .burner::before{left:6px;right:6px;height:5px;top:-2px}
+  .burner-char{font-size:15px}
+  .stick.lit{height:50px}
+  .sticks-row{height:52px;gap:8px}
+  #smokeCanvas{width:150px;height:200px;bottom:24px}
+  /* 供灯环 */
+  .lamp-ring{width:220px;height:55px;margin-top:10px}
+  .mini-lamp{width:14px;height:22px}
+  .mini-lamp .flame{width:7px;height:9px}
+  .mini-lamp .base{width:9px;height:10px}
+  .mini-lamp .glow{top:-6px;left:-7px;width:28px;height:28px}
   /* 香型间距 */
   .incense-select{gap:12px}
   .incense-name{font-size:16px}
@@ -245,12 +247,12 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 @media screen and (max-width:360px){
   .title{font-size:26px;letter-spacing:6px}
   .tagline{font-size:14px}
-  .buddha-icon{width:140px;height:210px;margin-bottom:10px}
-  .burner{width:88px;height:36px}
-  .sticks-row{height:60px;gap:10px}
-  .stick.lit{height:58px}
-  #smokeCanvas{width:180px;height:240px;bottom:30px}
-  .lamp-ring{width:260px;height:66px;margin-top:10px}
+  .buddha-icon{width:80px;height:120px;margin-bottom:6px}
+  .burner{width:62px;height:26px}
+  .sticks-row{height:44px;gap:7px}
+  .stick.lit{height:44px}
+  #smokeCanvas{width:130px;height:180px;bottom:22px}
+  .lamp-ring{width:190px;height:48px;margin-top:8px}
   .main-actions{gap:4px}
   .btn-incense{padding:7px 12px;font-size:14px}
   .btn-sub{padding:7px 9px;font-size:12px}
@@ -379,49 +381,51 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   </div>
 
   <div class="altar-area">
-    <div class="buddha-light"></div>
+    <div class="altar-center">
+      <div class="buddha-wrap">
+        <div class="buddha-light"></div>
+        <svg class="buddha-icon" viewBox="0 0 100 150" fill="none">
+          <!-- 佛光背光 -->
+          <ellipse cx="50" cy="42" rx="38" ry="42" fill="currentColor" opacity="0.05"/>
+          <ellipse cx="50" cy="42" rx="32" ry="36" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.18"/>
+          <!-- 肉髻 -->
+          <ellipse cx="50" cy="14" rx="8" ry="7" fill="currentColor" opacity="0.3"/>
+          <!-- 头 -->
+          <ellipse cx="50" cy="26" rx="10" ry="11" fill="currentColor" opacity="0.25"/>
+          <!-- 面部轮廓 -->
+          <ellipse cx="50" cy="27" rx="8" ry="9" fill="currentColor" opacity="0.12"/>
+          <!-- 眉间白毫 -->
+          <circle cx="50" cy="24" r="1" fill="currentColor" opacity="0.4"/>
+          <!-- 身体 - 内衣 -->
+          <path d="M38 36 Q50 32 62 36 L64 55 Q50 58 36 55 Z" fill="currentColor" opacity="0.2"/>
+          <!-- 袈裟 -->
+          <path d="M32 38 Q50 34 68 38 L72 80 Q50 85 28 80 Z" fill="currentColor" opacity="0.15"/>
+          <!-- 袈裟褶纹 -->
+          <path d="M40 45 Q50 50 60 45" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.15"/>
+          <path d="M38 55 Q50 60 62 55" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.12"/>
+          <!-- 禅定印（双手交叠） -->
+          <ellipse cx="50" cy="62" rx="10" ry="5" fill="currentColor" opacity="0.18"/>
+          <!-- 双腿跏趺坐 -->
+          <path d="M28 72 Q35 65 50 68 Q65 65 72 72 Q75 82 68 88 Q50 95 32 88 Q25 82 28 72 Z" fill="currentColor" opacity="0.15"/>
+          <!-- 莲座 -->
+          <path d="M30 88 Q50 92 70 88 Q68 95 50 98 Q32 95 30 88 Z" fill="currentColor" opacity="0.12"/>
+          <path d="M25 92 Q50 98 75 92" fill="none" stroke="currentColor" stroke-width="0.4" opacity="0.1"/>
+          <!-- 莲座瓣 -->
+          <path d="M35 92 Q40 98 45 92" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+          <path d="M45 92 Q50 100 55 92" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+          <path d="M55 92 Q60 98 65 92" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+          <!-- 头光 -->
+          <circle cx="50" cy="26" r="16" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+          <circle cx="50" cy="26" r="22" fill="none" stroke="currentColor" stroke-width="0.2" opacity="0.06"/>
+        </svg>
+      </div>
 
-    <!-- 精细佛像SVG：跏趺坐佛，螺髻、法印、莲座 -->
-    <svg class="buddha-icon" viewBox="0 0 100 150" fill="none">
-      <!-- 佛光背光 -->
-      <ellipse cx="50" cy="42" rx="38" ry="42" fill="currentColor" opacity="0.05"/>
-      <ellipse cx="50" cy="42" rx="32" ry="36" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.18"/>
-      <!-- 肉髻 -->
-      <ellipse cx="50" cy="14" rx="8" ry="7" fill="currentColor" opacity="0.3"/>
-      <!-- 头 -->
-      <ellipse cx="50" cy="26" rx="10" ry="11" fill="currentColor" opacity="0.25"/>
-      <!-- 面部轮廓 -->
-      <ellipse cx="50" cy="27" rx="8" ry="9" fill="currentColor" opacity="0.12"/>
-      <!-- 眉间白毫 -->
-      <circle cx="50" cy="24" r="1" fill="currentColor" opacity="0.4"/>
-      <!-- 身体 - 内衣 -->
-      <path d="M38 36 Q50 32 62 36 L64 55 Q50 58 36 55 Z" fill="currentColor" opacity="0.2"/>
-      <!-- 袈裟 -->
-      <path d="M32 38 Q50 34 68 38 L72 80 Q50 85 28 80 Z" fill="currentColor" opacity="0.15"/>
-      <!-- 袈裟褶纹 -->
-      <path d="M40 45 Q50 50 60 45" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.15"/>
-      <path d="M38 55 Q50 60 62 55" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.12"/>
-      <!-- 禅定印（双手交叠） -->
-      <ellipse cx="50" cy="62" rx="10" ry="5" fill="currentColor" opacity="0.18"/>
-      <!-- 双腿跏趺坐 -->
-      <path d="M28 72 Q35 65 50 68 Q65 65 72 72 Q75 82 68 88 Q50 95 32 88 Q25 82 28 72 Z" fill="currentColor" opacity="0.15"/>
-      <!-- 莲座 -->
-      <path d="M30 88 Q50 92 70 88 Q68 95 50 98 Q32 95 30 88 Z" fill="currentColor" opacity="0.12"/>
-      <path d="M25 92 Q50 98 75 92" fill="none" stroke="currentColor" stroke-width="0.4" opacity="0.1"/>
-      <!-- 莲座瓣 -->
-      <path d="M35 92 Q40 98 45 92" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
-      <path d="M45 92 Q50 100 55 92" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
-      <path d="M55 92 Q60 98 65 92" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
-      <!-- 头光 -->
-      <circle cx="50" cy="26" r="16" fill="none" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
-      <circle cx="50" cy="26" r="22" fill="none" stroke="currentColor" stroke-width="0.2" opacity="0.06"/>
-    </svg>
-
-    <div class="burner-combo">
-      <div class="sticks-row" id="sticksRow"></div>
-      <div class="burner"><span class="burner-char">福</span></div>
-      <canvas id="smokeCanvas" width="160" height="200"></canvas>
-      <div class="lamp-ring" id="lampRing"></div>
+      <div class="burner-combo">
+        <div class="sticks-row" id="sticksRow"></div>
+        <div class="burner"><span class="burner-char">福</span></div>
+        <canvas id="smokeCanvas" width="160" height="200"></canvas>
+        <div class="lamp-ring" id="lampRing"></div>
+      </div>
     </div>
   </div>
 
