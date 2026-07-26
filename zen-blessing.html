@@ -138,11 +138,24 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 .share-label{font-size:12px;color:var(--warm-dim)}
 .share-desc{font-size:9px;color:var(--warm-dim);opacity:.4;margin-top:2px}
 
-/* 节气信息卡 */
-.fest-card{padding:14px;background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.1);border-radius:10px;margin-bottom:14px;text-align:center}
-.fest-name{font-size:16px;color:var(--gold);letter-spacing:3px;margin-bottom:4px}
-.fest-desc{font-size:11px;color:var(--warm-dim);opacity:.5;line-height:1.6}
-.fest-date{font-size:9px;color:var(--warm-dim);opacity:.3;margin-top:6px}
+/* 节气弹窗 */
+.fest-tabs{display:flex;gap:0;margin-bottom:16px;border-bottom:1px solid rgba(201,168,76,0.1)}
+.fest-tab{flex:1;padding:8px 0;text-align:center;font-size:12px;color:var(--warm-dim);opacity:.5;cursor:pointer;transition:all .3s;letter-spacing:2px;border-bottom:2px solid transparent}
+.fest-tab.active{color:var(--gold);opacity:1;border-bottom-color:var(--gold)}
+.fest-list{max-height:50vh;overflow-y:auto;scrollbar-width:none}
+.fest-list::-webkit-scrollbar{display:none}
+.fest-group{margin-bottom:12px}
+.fest-group-title{font-size:10px;color:var(--gold);opacity:.5;letter-spacing:3px;padding:6px 0 4px;border-bottom:1px solid rgba(201,168,76,0.06);margin-bottom:8px}
+.fest-row{display:flex;align-items:center;gap:10px;padding:8px 10px;margin-bottom:6px;background:rgba(201,168,76,0.03);border:1px solid rgba(201,168,76,0.06);border-radius:10px;transition:all .3s}
+.fest-row:hover{border-color:rgba(201,168,76,0.15);background:rgba(201,168,76,0.06)}
+.fest-row-icon{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+.fest-row-body{flex:1;min-width:0}
+.fest-row-name{font-size:13px;color:var(--gold);letter-spacing:1px;margin-bottom:2px}
+.fest-row-desc{font-size:10px;color:var(--warm-dim);opacity:.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fest-row-date{font-size:10px;color:var(--warm-dim);opacity:.25;flex-shrink:0;letter-spacing:1px}
+.fest-row.is-today{border-color:rgba(201,168,76,0.25);background:rgba(201,168,76,0.08)}
+.fest-row.is-today .fest-row-name{opacity:1}
+.fest-row.is-today::after{content:'今日';font-size:8px;color:var(--gold);opacity:.6;padding:1px 5px;border:1px solid rgba(201,168,76,0.2);border-radius:4px;margin-left:auto;flex-shrink:0}
 
 .toast{position:fixed;top:50px;left:50%;transform:translateX(-50%) translateY(-10px);padding:7px 20px;background:rgba(20,16,12,.95);border:1px solid rgba(201,168,76,0.2);border-radius:20px;color:var(--gold);font-size:11px;letter-spacing:1px;z-index:200;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -454,6 +467,10 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 <div class="modal-bg" id="festModal">
   <div class="modal-card">
     <div class="modal-heading">佛历节气</div>
+    <div class="fest-tabs">
+      <div class="fest-tab active" data-tab="buddha" onclick="switchFestTab('buddha')">🪷 佛诞日</div>
+      <div class="fest-tab" data-tab="solar" onclick="switchFestTab('solar')">🍃 节气</div>
+    </div>
     <div id="festContent"></div>
     <div class="modal-btns"><button class="modal-btn m-cancel" onclick="closeFestModal()">关闭</button></div>
   </div>
@@ -676,24 +693,53 @@ function initFestivalBar(){
   }
 }
 
+let festCurrentTab='buddha';
+function switchFestTab(tab){
+  festCurrentTab=tab;
+  document.querySelectorAll('.fest-tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===tab));
+  renderFestContent();
+}
+function renderFestContent(){
+  const now=new Date();const cm=now.getMonth()+1;const cd=now.getDate();
+  const content=document.getElementById('festContent');content.innerHTML='';
+  const list=document.createElement('div');list.className='fest-list';
+  if(festCurrentTab==='buddha'){
+    // 佛诞日按月份分组
+    const months=[...new Set(buddhaDays.map(f=>f.m))].sort((a,b)=>a-b);
+    months.forEach(m=>{
+      const items=buddhaDays.filter(f=>f.m===m);
+      const group=document.createElement('div');group.className='fest-group';
+      const title=document.createElement('div');title.className='fest-group-title';title.textContent=m+'月';
+      group.appendChild(title);
+      items.forEach(e=>{
+        const row=document.createElement('div');row.className='fest-row';
+        if(e.m===cm&&e.d===cd)row.classList.add('is-today');
+        row.innerHTML=`<div class="fest-row-icon">🪷</div><div class="fest-row-body"><div class="fest-row-name">${e.name}</div><div class="fest-row-desc">${e.desc}</div></div><div class="fest-row-date">${e.m}/${e.d}</div>`;
+        group.appendChild(row);
+      });
+      list.appendChild(group);
+    });
+  }else{
+    // 节气按月份分组
+    const months=[...new Set(solarTerms.map(f=>f.m))].sort((a,b)=>a-b);
+    months.forEach(m=>{
+      const items=solarTerms.filter(f=>f.m===m);
+      const group=document.createElement('div');group.className='fest-group';
+      const title=document.createElement('div');title.className='fest-group-title';title.textContent=m+'月';
+      group.appendChild(title);
+      items.forEach(e=>{
+        const row=document.createElement('div');row.className='fest-row';
+        if(e.m===cm&&Math.abs(e.d-cd)<=1)row.classList.add('is-today');
+        row.innerHTML=`<div class="fest-row-icon">🍃</div><div class="fest-row-body"><div class="fest-row-name">${e.name}</div><div class="fest-row-desc">${e.desc}</div></div><div class="fest-row-date">${e.m}/${e.d}</div>`;
+        group.appendChild(row);
+      });
+      list.appendChild(group);
+    });
+  }
+  content.appendChild(list);
+}
 function openFestModal(){
-  const now=new Date();const m=now.getMonth()+1;
-  // 当月及近2个月的节气和佛诞日
-  const events=[];
-  const months=[m-1,m,m+1].map(x=>x===0?12:x===13?1:x);
-  solarTerms.filter(f=>months.includes(f.m)).forEach(f=>events.push({...f,type:'solar'}));
-  buddhaDays.filter(f=>months.includes(f.m)).forEach(f=>events.push({...f,type:'buddha'}));
-  events.sort((a,b)=>a.m===b.m?a.d-b.d:a.m-b.m);
-
-  const content=document.getElementById('festContent');
-  content.innerHTML='';
-  if(events.length===0){content.innerHTML='<div style="text-align:center;color:var(--warm-dim);opacity:.3;padding:20px">暂无近期节日</div>'}
-  events.forEach(e=>{
-    const card=document.createElement('div');card.className='fest-card';
-    const icon=e.type==='buddha'?'🪷':'🍃';
-    card.innerHTML=`<div class="fest-name">${icon} ${e.name}</div><div class="fest-desc">${e.desc}</div><div class="fest-date">${e.m}月${e.d}日</div>`;
-    content.appendChild(card);
-  });
+  renderFestContent();
   document.getElementById('festModal').classList.add('show');
 }
 function closeFestModal(){document.getElementById('festModal').classList.remove('show')}
