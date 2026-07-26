@@ -550,7 +550,7 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 
 // ===== Web Audio 音效 =====
 let audioCtx=null;
-function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx}
+function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
 
 // 敲钟音效
 function ringBell(){
@@ -560,11 +560,16 @@ function ringBell(){
   freqs.forEach((f,i)=>{
     const osc=ctx.createOscillator();const gain=ctx.createGain();
     osc.type='sine';osc.frequency.setValueAtTime(f,t);
-    gain.gain.setValueAtTime(0.15-i*0.03,t);
+    gain.gain.setValueAtTime(0.35-i*0.08,t);
     gain.gain.exponentialRampToValueAtTime(0.001,t+4-i);
     osc.connect(gain);gain.connect(ctx.destination);
     osc.start(t);osc.stop(t+4-i);
   });
+  // 低频撞击感
+  const hit=ctx.createOscillator();const hitG=ctx.createGain();
+  hit.type='sine';hit.frequency.setValueAtTime(120,t);hit.frequency.exponentialRampToValueAtTime(60,t+0.3);
+  hitG.gain.setValueAtTime(0.3,t);hitG.gain.exponentialRampToValueAtTime(0.001,t+1.5);
+  hit.connect(hitG);hitG.connect(ctx.destination);hit.start(t);hit.stop(t+1.5);
   toast('晨钟暮鼓 · 消除烦恼');
 }
 
