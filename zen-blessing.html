@@ -38,7 +38,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 .ornament-dot{width:3px;height:3px;border-radius:50%;background:var(--gold);opacity:.3}
 
 /* 祭坛 */
-.altar-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;width:100%;min-height:0;overflow:hidden}
+.altar-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;width:100%;min-height:0;overflow:visible}
 .altar-center{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .buddha-wrap{position:relative;display:flex;align-items:center;justify-content:center}
 .buddha-light{position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,0.06) 0%,rgba(201,168,76,0.02) 40%,transparent 70%);animation:bLightPulse 5s ease-in-out infinite;pointer-events:none}
@@ -208,7 +208,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   .burner-char{font-size:15px}
   .stick.lit{height:50px}
   .sticks-row{height:52px;gap:8px}
-  #smokeCanvas{width:150px;height:200px;bottom:125px}
+  #smokeCanvas{width:150px;height:200px;bottom:auto;top:-148px}
   /* 供灯环 */
   .lamp-ring{width:220px;height:55px;margin-top:10px}
   .mini-lamp{width:14px;height:22px}
