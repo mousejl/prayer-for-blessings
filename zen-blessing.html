@@ -82,7 +82,7 @@
 body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--deep);color:var(--warm);height:100vh;overflow:hidden;user-select:none;position:relative;margin:0 auto;text-align:center;font-size:15px}
 
 /* 背景 */
-.layer-bg{position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 100%,rgba(40,28,16,0.8) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 50% 20%,rgba(60,40,20,0.3) 0%,transparent 50%),linear-gradient(180deg,#080604 0%,#0E0B08 30%,#16100A 70%,#0E0B08 100%)}
+.layer-bg{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 80% 50% at 50% 100%,rgba(40,28,16,0.8) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 50% 20%,rgba(60,40,20,0.3) 0%,transparent 50%),linear-gradient(180deg,#080604 0%,#0E0B08 30%,#16100A 70%,#0E0B08 100%)}
 .ambient-glow{position:fixed;width:400px;height:400px;top:35%;left:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(201,168,76,0.06) 0%,transparent 70%);animation:ambPulse 4s ease-in-out infinite;pointer-events:none;z-index:1}
 @keyframes ambPulse{0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}
 .dust-layer{position:fixed;inset:0;z-index:2;pointer-events:none}
