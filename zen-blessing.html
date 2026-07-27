@@ -153,7 +153,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 
 /* 香型 */
 .incense-select{display:flex;gap:16px;align-items:center}
-.incense-opt{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .3s;padding:4px 8px;border-radius:8px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.incense-opt{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .3s;padding:4px 8px;border-radius:8px;touch-action:manipulation;-webkit-tap-highlight-color:transparent;-webkit-user-select:auto;user-select:auto;background:none;border:none;font-size:inherit;color:inherit;font-family:inherit}
 .incense-opt:hover{background:rgba(201,168,76,0.05)}.incense-opt.active{background:rgba(201,168,76,0.08)}
 .incense-dot{width:8px;height:8px;border-radius:50%;border:1px solid rgba(201,168,76,0.5);transition:all .3s;background:rgba(201,168,76,0.1)}
 .incense-opt.active .incense-dot{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(201,168,76,0.4)}
@@ -523,9 +523,9 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 
   <div class="bottom-area">
     <div class="incense-select" id="incenseSelect">
-      <div class="incense-opt sandal active" data-type="sandalwood" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">檀香</div></div>
-      <div class="incense-opt aloes" data-type="aloeswood" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">沉香</div></div>
-      <div class="incense-opt lily" data-type="lily" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">清香</div></div>
+      <button class="incense-opt sandal active" data-type="sandalwood" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">檀香</div></button>
+      <button class="incense-opt aloes" data-type="aloeswood" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">沉香</div></button>
+      <button class="incense-opt lily" data-type="lily" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">清香</div></button>
     </div>
 
     <div class="main-actions">
