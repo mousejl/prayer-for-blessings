@@ -1,3 +1,23 @@
 .DS_Store
 *.png
+
+# Archives
+*.zip
+*.tar.gz
+
+# Data sources (large Excel files)
+*.xlsx
+
+# Server startup script (generated)
+start_server.py
+
+# Uploaded files (server-deployment)
+uploads/
+
+# Restart flag (auto-update)
+.restart.flag
+venv_linux/
+*.bak
+
+# Temp files
 .temp/
