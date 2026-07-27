@@ -523,9 +523,9 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 
   <div class="bottom-area">
     <div class="incense-select" id="incenseSelect">
-      <button class="incense-opt sandal active" data-type="sandalwood" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">檀香</div></button>
-      <button class="incense-opt aloes" data-type="aloeswood" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">沉香</div></button>
-      <button class="incense-opt lily" data-type="lily" onclick="pickIncense(this)"><div class="incense-dot"></div><div class="incense-name">清香</div></button>
+      <div class="incense-opt sandal active" data-type="sandalwood"><div class="incense-dot"></div><div class="incense-name">檀香</div></div>
+      <div class="incense-opt aloes" data-type="aloeswood"><div class="incense-dot"></div><div class="incense-name">沉香</div></div>
+      <div class="incense-opt lily" data-type="lily"><div class="incense-dot"></div><div class="incense-name">清香</div></div>
     </div>
 
     <div class="main-actions">
@@ -697,20 +697,18 @@ function checkinSound(){
 }
 
 // ===== 香型 =====
+const INC_TYPES=['sandalwood','aloeswood','lily'];
+function randomIncense(){return INC_TYPES[Math.floor(Math.random()*INC_TYPES.length)]}
+function showIncType(type){document.querySelectorAll('.incense-opt').forEach(e=>e.classList.remove('active'));document.querySelector(`.incense-opt[data-type="${type}"]`)?.classList.add('active');selInc=type}
 let selInc='sandalwood';
-function pickIncense(el){document.querySelectorAll('.incense-opt').forEach(e=>e.classList.remove('active'));el.classList.add('active');selInc=el.dataset.type}
-// 手机端触摸事件：touchstart 直接响应，无需等300ms click延迟
-document.addEventListener('touchstart',function(e){
-  const opt=e.target.closest('.incense-opt');
-  if(opt)pickIncense(opt);
-},{passive:true});
 
 // ===== 上香 =====
 const MAX_S=3;
 function offerIncense(){
   const d=gd();const cur=(d.activeIncense||[]).filter(i=>Date.now()-i.st<i.dur);
   if(cur.length>=MAX_S){toast('香炉已满');return}
-  cur.push({id:Date.now(),type:selInc,st:Date.now(),dur:1800000});
+  const type=randomIncense();showIncType(type);
+  cur.push({id:Date.now(),type,st:Date.now(),dur:1800000});
   d.activeIncense=cur;d.totalInc=(d.totalInc||0)+1;sd(d);
   renderSticks();startSmoke();updateInfo();
   chantSound(); // 念经音效
