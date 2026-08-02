@@ -651,12 +651,11 @@ function toast(m){const t=document.getElementById('toast');t.textContent=m;t.cla
 let audioCtx=null;
 function getAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}
 
-// 敲钟音效 - 真实寺庙钟声，每次三声
+// 敲钟音效 - 真实寺庙钟声
 let bellAudio=null;
 function ringBell(){
   if(!bellAudio){bellAudio=new Audio('audio/bell.wav');bellAudio.volume=0.8}
-  const playAt=(t)=>{setTimeout(()=>{bellAudio.currentTime=0;bellAudio.play().catch(()=>{})},t)};
-  playAt(0);playAt(1200);playAt(2400);
+  bellAudio.currentTime=0;bellAudio.play().catch(()=>{});
   toast('晨钟暮鼓 · 消除烦恼');
 }
 
