@@ -542,7 +542,8 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
         <span class="music-icon">&#9654;</span>
       </button>
       <div class="music-tracks" id="musicTracks">
-        <div class="music-track active" data-track="heart" onclick="selectTrack('heart')">心经</div>
+        <div class="music-track active" data-track="incense" onclick="selectTrack('incense')">炉香赞</div>
+        <div class="music-track" data-track="heart" onclick="selectTrack('heart')">心经</div>
         <div class="music-track" data-track="compassion" onclick="selectTrack('compassion')">大悲咒</div>
         <div class="music-track" data-track="mantra" onclick="selectTrack('mantra')">六字明咒</div>
       </div>
@@ -935,14 +936,16 @@ function sharePoster(){
 
 // ===== 背景音乐系统 =====
 const musicTracks={
+  incense:{name:'炉香赞',desc:'炉香乍爇，法界蒙熏，诸佛海会悉遥闻'},
   heart:{name:'心经',desc:'观自在菩萨，照见五蕴皆空'},
   compassion:{name:'大悲咒',desc:'千手千眼，大悲心陀罗尼'},
   mantra:{name:'六字明咒',desc:'唵嘛呢叭咪吽'}
 };
-let musicPlaying=false, currentTrack='heart', audioEl=null;
+let musicPlaying=false, currentTrack='incense', audioEl=null;
 
 // 音频文件路径映射（加v参数防浏览器缓存）
 const audioFiles={
+  incense:'audio/incense_loop.m4a?v=1',
   heart:'audio/heart_loop.wav?v=3',
   compassion:'audio/compassion_loop.m4a?v=4',
   mantra:'audio/mantra_loop.wav?v=3'
