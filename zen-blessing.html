@@ -181,9 +181,9 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 .music-track{padding:3px 10px;border-radius:12px;font-size:11px;color:var(--warm);opacity:.5;cursor:pointer;transition:all .3s;letter-spacing:1px;border:1px solid transparent;font-family:inherit;background:transparent}
 .music-track:hover{opacity:.6}
 .music-track.active{opacity:1;color:var(--gold);border-color:rgba(201,168,76,0.25);background:rgba(201,168,76,0.06)}
-.music-vol{width:50px;height:3px;-webkit-appearance:none;appearance:none;background:rgba(201,168,76,0.15);border-radius:2px;outline:none;cursor:pointer}
-.music-vol::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--gold);opacity:.6;cursor:pointer}
-.music-vol::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--gold);border:none;cursor:pointer}
+.music-progress{width:180px;height:3px;-webkit-appearance:none;appearance:none;background:rgba(201,168,76,0.15);border-radius:2px;outline:none;cursor:pointer}
+.music-progress::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--gold);opacity:.6;cursor:pointer}
+.music-progress::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--gold);border:none;cursor:pointer}
 
 /* 信息栏 */
 .info-bar{display:flex;gap:20px;justify-content:center;align-items:center;padding:4px 0 0}
@@ -311,7 +311,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
   .music-track{font-size:13px}
   .music-toggle{width:36px;height:36px;font-size:16px}
   .music-bar{flex-wrap:wrap;justify-content:center}
-  .music-vol{flex-basis:100%;width:120px;margin:4px auto 0}
+  .music-progress{flex-basis:100%;width:200px;margin:4px auto 0}
 }
 
 /* ===== 小屏兜底（iPhone SE / 320px）— 参考手机端等比缩放 ===== */
@@ -549,7 +549,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
         <div class="music-track" data-track="compassion" onclick="selectTrack('compassion')">大悲咒</div>
         <div class="music-track" data-track="mantra" onclick="selectTrack('mantra')">六字明咒</div>
       </div>
-      <input type="range" class="music-vol" id="musicVol" min="0" max="100" value="40" oninput="setMusicVol(this.value)" title="音量">
+      <input type="range" class="music-progress" id="musicProg" min="0" max="100" value="0" oninput="seekMusic(this.value)" title="播放进度">
     </div>
 
     <div class="info-bar">
@@ -971,7 +971,10 @@ function startMusic(){
   // 复用已缓存的Audio对象
   audioEl=audioPool[currentTrack];
   audioEl.currentTime=0;
-  audioEl.volume=document.getElementById('musicVol').value/100;
+  audioEl.volume=0.5;
+  const progEl0=document.getElementById('musicProg');
+  if(progEl0){progEl0.value=0;paintProg(0);}
+  audioEl.addEventListener('timeupdate',onTimeUpdate);
   musicPlaying=true;
   document.getElementById('musicToggle').classList.add('playing');
   document.querySelector('.music-icon').innerHTML='&#9646;&#9646;';
@@ -1006,7 +1009,7 @@ function startMusic(){
 
 function stopMusic(){
   if(!musicPlaying)return;
-  if(audioEl){audioEl.pause()}
+  if(audioEl){audioEl.pause();audioEl.removeEventListener('timeupdate',onTimeUpdate)}
   musicPlaying=false;
   document.getElementById('musicToggle').classList.remove('playing');
   document.querySelector('.music-icon').innerHTML='&#9654;';
@@ -1014,7 +1017,29 @@ function stopMusic(){
   const progCircle=document.querySelector('.music-prog');
   const circumference=2*Math.PI*16;
   if(progCircle)progCircle.style.strokeDashoffset=circumference;
+  // 重置进度条
+  const progEl=document.getElementById('musicProg');
+  if(progEl){progEl.value=0;paintProg(0)}
   const d=gd();d.musicOn=false;sd(d);
+}
+
+function onTimeUpdate(){
+  if(!audioEl||!isFinite(audioEl.duration)||audioEl.duration<=0)return;
+  const pct=audioEl.currentTime/audioEl.duration*100;
+  const el=document.getElementById('musicProg');
+  if(el&&document.activeElement!==el){el.value=pct;paintProg(pct)}
+}
+
+function paintProg(pct){
+  const el=document.getElementById('musicProg');
+  if(el)el.style.background='linear-gradient(90deg,rgba(201,168,76,0.55) '+pct+'%,rgba(201,168,76,0.15) '+pct+'%)';
+}
+
+function seekMusic(v){
+  if(audioEl&&isFinite(audioEl.duration)&&audioEl.duration>0){
+    audioEl.currentTime=v/100*audioEl.duration;
+  }
+  paintProg(v);
 }
 
 function toggleMusic(){
@@ -1028,18 +1053,12 @@ function selectTrack(track){
   const d=gd();d.musicTrack=track;sd(d);
 }
 
-function setMusicVol(v){
-  if(audioEl)audioEl.volume=v/100;
-  const d=gd();d.musicVol=v;sd(d);
-}
-
 function restoreMusic(){
   const d=gd();
   if(d.musicTrack){
     currentTrack=d.musicTrack;
     document.querySelectorAll('.music-track').forEach(t=>t.classList.toggle('active',t.dataset.track===d.musicTrack));
   }
-  if(d.musicVol)document.getElementById('musicVol').value=d.musicVol;
 }
 
 // ===== 飘尘 =====
