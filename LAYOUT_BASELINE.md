@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: '4e9eb483-1043-40de-ba2d-9533c0fe5ef9'
-  PropagateID: '4e9eb483-1043-40de-ba2d-9533c0fe5ef9'
-  ReservedCode1: 'b53f57ed-92ad-434e-9d24-5fed87426d2d'
-  ReservedCode2: 'b53f57ed-92ad-434e-9d24-5fed87426d2d'
+  ProduceID: 'b2c8f06e-505f-4d08-877c-5e9ff4baabe3'
+  PropagateID: 'b2c8f06e-505f-4d08-877c-5e9ff4baabe3'
+  ReservedCode1: '5edb4c14-82f4-4f85-a04d-b85996563614'
+  ReservedCode2: '5edb4c14-82f4-4f85-a04d-b85996563614'
 ---
 
 # 禅心祈福 - 布局参数基线

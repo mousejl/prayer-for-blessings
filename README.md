@@ -3,10 +3,10 @@ AIGC:
   ContentProducer: '001191110102MAD55U9H0F10002'
   ContentPropagator: '001191110102MAD55U9H0F10002'
   Label: '1'
-  ProduceID: 'cb53e4af-2a6b-4068-ae3a-2d1042e22aa4'
-  PropagateID: 'cb53e4af-2a6b-4068-ae3a-2d1042e22aa4'
-  ReservedCode1: 'c68aa397-209b-48f5-afe4-a060d125cf84'
-  ReservedCode2: 'c68aa397-209b-48f5-afe4-a060d125cf84'
+  ProduceID: '10fb11db-a509-4913-9f86-d50090cca4c4'
+  PropagateID: '10fb11db-a509-4913-9f86-d50090cca4c4'
+  ReservedCode1: 'dbd323fb-d846-4e7a-9b05-b792c47d18c4'
+  ReservedCode2: 'dbd323fb-d846-4e7a-9b05-b792c47d18c4'
 ---
 
 # 禅心祈福
@@ -29,7 +29,7 @@ AIGC:
 - 单 HTML 文件，零依赖，浏览器直接运行
 - Canvas 烟雾粒子动画
 - Web Audio API 合成音效（钟声、供灯叮声）
-- 预录制真实诵经音频（22050Hz WAV），浏览器 `<audio>` 播放
+- 预录制真实诵经音频（心经 WAV + 大悲咒 M4A 七遍快诵），浏览器 `<audio>` 播放
 - 全响应式适配：手机（含 iPhone SE / 横屏）、平板、PC、超宽屏
 - localStorage 持久化存储所有数据，无需后端
 
@@ -40,7 +40,8 @@ prayer-for-blessings/
 ├── zen-blessing.html        # 主页面（含全部 HTML/CSS/JS）
 ├── audio/
 │   ├── heart_loop.wav       # 心经诵经音频（120s 循环）
-│   ├── compassion_loop.wav  # 大悲咒诵经音频（120s 循环）
+│   ├── compassion_loop.m4a  # 大悲咒诵经音频（14分27秒，七遍快诵）
+│   ├── compassion_loop.wav  # 大悲咒诵经音频（旧版，120s 循环）
 │   └── mantra_loop.wav      # 六字大明咒诵经音频（120s 循环）
 ├── README.md
 └── .gitignore
@@ -147,8 +148,8 @@ prayer-for-blessings/
 
 音频文件位于 `audio/` 目录，支持 WAV 格式。如需替换：
 
-1. 准备新的 WAV 音频文件（建议 22050Hz 单声道，文件更小）
-2. 替换对应文件：`heart_loop.wav`（心经）、`compassion_loop.wav`（大悲咒）、`mantra_loop.wav`（六字大明咒）
+1. 准备新的音频文件（WAV 或 M4A 格式，建议 44100Hz 立体声）
+2. 替换对应文件：`heart_loop.wav`（心经）、`compassion_loop.m4a`（大悲咒）、`mantra_loop.wav`（六字大明咒）
 3. 如文件名不同，需修改 `zen-blessing.html` 中 `audioFiles` 对象的路径
 
 ### 修改采样率降低体积
