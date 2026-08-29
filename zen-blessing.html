@@ -249,6 +249,79 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
 
 .toast{position:fixed;top:50px;left:50%;transform:translateX(-50%) translateY(-10px);padding:8px 22px;background:rgba(20,16,12,.95);border:1px solid rgba(201,168,76,0.3);border-radius:20px;color:var(--gold);font-size:13px;letter-spacing:1px;z-index:200;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== 抽签摇卦 ===== */
+.divine-modal-card{max-width:360px;padding:28px 24px}
+.divine-tabs{display:flex;gap:0;margin-bottom:20px;border-bottom:1px solid rgba(201,168,76,0.1)}
+.divine-tab{flex:1;padding:8px 0;text-align:center;font-size:13px;color:var(--warm);opacity:.6;cursor:pointer;transition:all .3s;letter-spacing:2px;border-bottom:2px solid transparent;font-family:inherit}
+.divine-tab.active{color:var(--gold);opacity:1;border-bottom-color:var(--gold)}
+
+/* 签筒 */
+.divine-stage{text-align:center;padding:10px 0 16px}
+.divine-tube{display:inline-block;width:70px;height:110px;background:linear-gradient(180deg,#5A4030 0%,#4A3525 30%,#3A2520 100%);border-radius:8px 8px 32px 32px;position:relative;box-shadow:0 6px 20px rgba(0,0,0,.5),inset 0 0 15px rgba(0,0,0,.3);transition:transform .3s}
+.divine-tube::before{content:'';position:absolute;top:-3px;left:8px;right:8px;height:6px;background:linear-gradient(180deg,#7A5A40,#5A4030);border-radius:3px}
+.divine-tube::after{content:'籤';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;color:var(--gold);opacity:.4}
+.divine-tube .sticks-mini{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:30px;height:80px;display:flex;justify-content:center;gap:2px}
+.divine-tube .sticks-mini span{display:block;width:3px;background:linear-gradient(to bottom,#C9A84C,#8A7030);border-radius:1px}
+.divine-tube.shaking{animation:tubeShake .4s ease-in-out infinite}
+@keyframes tubeShake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+
+/* 摇卦铜钱 */
+.coin-area{display:flex;justify-content:center;align-items:center;gap:12px;padding:10px 0}
+.divine-coin{width:48px;height:48px;border-radius:50%;background:radial-gradient(circle,#B8860B 30%,#8B6914 50%,#5B4210 100%);display:flex;align-items:center;justify-content:center;border:2px solid #5B4210;box-shadow:0 3px 8px rgba(0,0,0,.4);transition:transform .3s}
+.divine-coin .coin-char{font-size:22px;color:#3A2520;font-weight:600;text-shadow:0 1px 0 rgba(255,215,0,.3)}
+.divine-coin.flipping{animation:coinFlip .5s ease-out}
+@keyframes coinFlip{0%{transform:rotateY(0)}50%{transform:rotateY(180deg) scale(1.1)}100%{transform:rotateY(360deg)}}
+.coin-result-row{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.coin-result{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:1px solid rgba(201,168,76,0.3)}
+.coin-result.yang{background:rgba(201,168,76,0.15);color:var(--gold)}
+.coin-result.yin{background:rgba(60,50,40,0.4);color:rgba(245,230,200,0.5)}
+
+/* 摇卦爻线 */
+.yao-lines{display:flex;flex-direction:column;gap:5px;margin:12px 0;align-items:center}
+.yao-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--warm);opacity:.5}
+.yao-row .yao-label{width:36px;text-align:right;letter-spacing:1px}
+.yao-bar{display:flex;gap:3px}
+.yao-seg{width:24px;height:8px;border-radius:1px;background:var(--gold);opacity:.85}
+.yao-seg.broken{background:transparent;border:1px solid rgba(201,168,76,0.4)}
+.yao-row.active{opacity:1}
+.yao-row.active .yao-label{color:var(--gold)}
+
+/* 签诗结果 */
+.divine-result{display:none;text-align:center;padding:12px 0}
+.divine-result.show{display:block;animation:fadeInUp .5s ease}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.divine-num{font-size:13px;color:var(--gold);opacity:.7;letter-spacing:2px;margin-bottom:8px}
+.divine-title{font-size:17px;color:var(--gold);letter-spacing:3px;margin-bottom:10px;font-weight:300}
+.divine-poem{font-size:14px;color:var(--warm);opacity:.85;line-height:2;letter-spacing:1px;margin-bottom:12px;white-space:pre-line}
+.divine-meaning{font-size:12px;color:var(--warm);opacity:.55;line-height:1.8;margin-bottom:12px}
+.divine-level{display:inline-block;padding:3px 12px;border-radius:12px;font-size:12px;letter-spacing:2px;margin-bottom:12px}
+.divine-level.upper{background:rgba(201,168,76,0.15);color:var(--gold);border:1px solid rgba(201,168,76,0.3)}
+.divine-level.mid{background:rgba(201,168,76,0.08);color:var(--warm);border:1px solid rgba(201,168,76,0.2)}
+.divine-level.lower{background:rgba(120,80,60,0.1);color:rgba(245,230,200,0.5);border:1px solid rgba(120,80,60,0.2)}
+
+/* 摇卦结果 - 卦象 */
+.hexagram-display{margin:8px 0}
+.hexagram-name{font-size:18px;color:var(--gold);letter-spacing:4px;margin-bottom:4px;font-weight:300}
+.hexagram-symbol{font-size:13px;color:var(--warm);opacity:.5;margin-bottom:8px}
+.hexagram-desc{font-size:12px;color:var(--warm);opacity:.6;line-height:1.8;margin-bottom:10px}
+
+.divine-again{padding:8px 20px;border-radius:14px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.25);color:var(--gold);font-size:13px;font-family:inherit;letter-spacing:2px;cursor:pointer;transition:all .3s}
+.divine-again:hover{border-color:var(--gold);background:rgba(202,168,76,0.12)}
+.divine-again:active{transform:scale(.96)}
+
+/* 手机端适配 */
+@media screen and (max-width:430px){
+  .divine-modal-card{max-width:100%;padding:24px 18px}
+  .divine-tube{width:60px;height:96px}
+  .divine-tube::after{font-size:18px}
+  .divine-coin{width:42px;height:42px}
+  .divine-coin .coin-char{font-size:18px}
+  .divine-title{font-size:18px}
+  .divine-poem{font-size:15px}
+  .divine-meaning{font-size:13px}
+  .divine-tab{font-size:15px}
+}
 .lotus-fx{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:90;opacity:0;transition:opacity .3s}
 .lotus-fx.show{opacity:1}
 .lotus-fx svg{width:140px;height:140px;animation:lotusAnim 1.3s ease-out forwards}
@@ -534,6 +607,7 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
       <button class="btn-incense" id="btnIncense" onclick="offerIncense()">请 香</button>
       <button class="btn-sub" onclick="openWishModal()">许愿</button>
       <button class="btn-sub" onclick="openLampModal()">供灯</button>
+      <button class="btn-sub" onclick="openDivineModal()">求签</button>
       <button class="btn-bell" onclick="ringBell()" title="敲钟"><span style="font-size:12px">🔔</span><span style="font-size:9px;margin-left:2px;letter-spacing:1px">敲钟</span></button>
       <button class="btn-sub" onclick="openShareModal()">分享</button>
     </div>
@@ -626,6 +700,71 @@ body{font-family:"Noto Serif SC","Songti SC","STSong",serif;background:var(--dee
     </div>
     <div id="festContent"></div>
     <div class="modal-btns"><button class="modal-btn m-cancel" onclick="closeFestModal()">关闭</button></div>
+  </div>
+</div>
+
+<!-- 求签摇卦弹窗 -->
+<div class="modal-bg" id="divineModal">
+  <div class="modal-card divine-modal-card">
+    <div class="modal-heading">求签问卜</div>
+    <div class="divine-tabs">
+      <div class="divine-tab active" data-mode="sign" onclick="switchDivineTab('sign')">🎋 求签</div>
+      <div class="divine-tab" data-mode="coin" onclick="switchDivineTab('coin')">🪙 摇卦</div>
+    </div>
+
+    <!-- 求签面板 -->
+    <div id="divineSignPanel">
+      <div class="divine-stage">
+        <div class="divine-tube" id="divineTube">
+          <div class="sticks-mini"><span style="height:70px"></span><span style="height:65px"></span><span style="height:75px"></span><span style="height:60px"></span><span style="height:68px"></span></div>
+        </div>
+      </div>
+      <div id="signResult" class="divine-result">
+        <div class="divine-num" id="signNum"></div>
+        <div class="divine-title" id="signTitle"></div>
+        <div class="divine-poem" id="signPoem"></div>
+        <div class="divine-level" id="signLevel"></div>
+        <div class="divine-meaning" id="signMeaning"></div>
+      </div>
+      <div class="modal-btns" id="signBtns">
+        <button class="modal-btn m-cancel" onclick="closeDivineModal()">关闭</button>
+        <button class="modal-btn m-ok" id="btnDrawSign" onclick="drawSign()">摇 签</button>
+      </div>
+      <div class="modal-btns" id="signAgainBtns" style="display:none">
+        <button class="modal-btn m-cancel" onclick="closeDivineModal()">关闭</button>
+        <button class="modal-btn m-ok" onclick="resetSign()">再求一签</button>
+      </div>
+    </div>
+
+    <!-- 摇卦面板 -->
+    <div id="divineCoinPanel" style="display:none">
+      <div class="divine-stage">
+        <div class="coin-area" id="coinArea">
+          <div class="divine-coin" id="coin1"><span class="coin-char">乾</span></div>
+          <div class="divine-coin" id="coin2"><span class="coin-char">坤</span></div>
+          <div class="divine-coin" id="coin3"><span class="coin-char">易</span></div>
+        </div>
+        <div class="coin-result-row" id="coinResultRow"></div>
+      </div>
+      <div class="yao-lines" id="yaoLines"></div>
+      <div id="coinResult" class="divine-result">
+        <div class="hexagram-display">
+          <div class="hexagram-name" id="hexName"></div>
+          <div class="hexagram-symbol" id="hexSymbol"></div>
+          <div class="hexagram-desc" id="hexDesc"></div>
+        </div>
+        <div class="divine-level" id="hexLevel"></div>
+        <div class="divine-meaning" id="hexMeaning"></div>
+      </div>
+      <div class="modal-btns" id="coinBtns">
+        <button class="modal-btn m-cancel" onclick="closeDivineModal()">关闭</button>
+        <button class="modal-btn m-ok" id="btnTossCoin" onclick="tossCoin()">摇 卦</button>
+      </div>
+      <div class="modal-btns" id="coinAgainBtns" style="display:none">
+        <button class="modal-btn m-cancel" onclick="closeDivineModal()">关闭</button>
+        <button class="modal-btn m-ok" onclick="resetCoin()">再摇一卦</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1065,9 +1204,385 @@ function restoreMusic(){
 function initDust(){const l=document.getElementById('dustLayer');const count=window.innerWidth>768?16:8;for(let i=0;i<count;i++){const d=document.createElement('div');d.className='dust';d.style.left=Math.random()*100+'%';d.style.top=(60+Math.random()*40)+'%';d.style.width=d.style.height=(0.5+Math.random()*1.5)+'px';d.style.animationDuration=(8+Math.random()*12)+'s';d.style.animationDelay=Math.random()*10+'s';l.appendChild(d)}}
 
 // 关闭弹窗
-['wishModal','lampModal','wallModal','shareModal','festModal'].forEach(id=>{
+['wishModal','lampModal','wallModal','shareModal','festModal','divineModal'].forEach(id=>{
   document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)e.target.classList.remove('show')});
 });
+
+// ===== 求签摇卦系统 =====
+let divineMode='sign';
+
+// 观音灵签100首 (t:题 p:诗 l:吉凶 m:解)
+const guanyinSigns=[
+{t:"第一签",p:"天开地辟结良缘\n日吉时谐万事全\n若得此签非小可\n人行忠正帝王宣",l:"上上",m:"鸿图大展，谋望皆遂"},
+{t:"第二签",p:"鸡犬相闻幸有邻\n桃花树下笑相迎\n若逢春景方为美\n得意之中却有惊",l:"上",m:"先吉后惊，慎防口舌"},
+{t:"第三签",p:"天地变通万物全\n自荣自养自安然\n生罗一字真端正\n须把人心仔细言",l:"上",m:"顺其自然，万事平稳"},
+{t:"第四签",p:"渐渐变化渐渐安\n劝君把定心木宽\n天大文书消息好\n只待鸡鸣舞九天",l:"中上",m:"渐入佳境，耐心等待"},
+{t:"第五签",p:"急水滩头泛轻舟\n且喜来到岸边头\n过去暗事都不见\n舟中又有一轮收",l:"中上",m:"险中得安，转危为机"},
+{t:"第六签",p:"风云际会在江中\n似有疑心又未通\n要知切摩真消息\n冰人亲语说从容",l:"中",m:"事有犹豫，待媒人言"},
+{t:"第七签",p:"云开月出照天下\n水绕山环抱小村\n为人多与运相通\n定有福禄发其中",l:"上",m:"云开见月，福禄自来"},
+{t:"第八签",p:"茂林松柏正兴旺\n雨露调和格外新\n更喜云中飞雁过\n几多消息到门庭",l:"上",m:"雨露滋润，好消息至"},
+{t:"第九签",p:"望渠消息问长安\n常把菱花仔细看\n蓦地有人传一信\n叫人立地心安然",l:"中上",m:"期盼消息，忽然传来"},
+{t:"第十签",p:"绿柳苍苍正当时\n任君此去作乾坤\n勿言此事无凭据\n自有亨通造化时",l:"上",m:"时机已到，放手去做"},
+{t:"第十一签",p:"欲求胜事可非常\n争奈亲姻日暂忙\n到得意时添感慨\n却来山下遇仙翁",l:"中上",m:"事虽可成，须耐等待"},
+{t:"第十二签",p:"东边事体又西边\n到处逢人便结缘\n若遇同声三两个\n大家携手上青天",l:"上",m:"广结善缘，贵人相助"},
+{t:"第十三签",p:"晨昏祷告莫嗟伤\n必有亨通到画堂\n龙虎风云齐际会\n定教平地步天梯",l:"上上",m:"定心祈祷，平步青云"},
+{t:"第十四签",p:"宛如仙鹤出樊笼\n脱难逃灾去路通\n南北东西无阻隔\n任君直上九霄宫",l:"上上",m:"灾消难解，任意纵横"},
+{t:"第十五签",p:"莫叹年来事似冰\n丰收原是命中生\n只恐鬼贼侵作耗\n常人翻作槛中人",l:"中下",m:"事似冰冷，须防小人"},
+{t:"第十六签",p:"水边林下两相依\n可惜先迷不见知\n可叹荣华无定价\n翻成得失与安危",l:"中",m:"先迷后悟，得失无常"},
+{t:"第十七签",p:"明月当空照天涯\n路逢险处又逢花\n劝君把定莫狐疑\n前途净处事可凭",l:"中上",m:"前途清净，莫要狐疑"},
+{t:"第十八签",p:"金乌渐渐入扶桑\n仔细斟量再较量\n不可凭言信他语\n是非终久自分张",l:"中",m:"勿信人言，自作主张"},
+{t:"第十九签",p:"急水行舟必有声\n意中事体未完成\n如今且把点心用\n到底之中见假真",l:"中",m:"急中未成，到底见真"},
+{t:"第二十签",p:"前途变化喜重重\n禄马天庭百事通\n若问求谋皆称意\n宝鼎香烟达九重",l:"上上",m:"前途变化，百事称意"},
+{t:"第二十一签",p:"过了忧危第一关\n且将心存二三\n更加前路无更改\n好事临头得自由",l:"中上",m:"过了忧危，好事将至"},
+{t:"第二十二签",p:"日落西山事过头\n谁知今又有悲秋\n逢人不必频开口\n深山有虎也须游",l:"中下",m:"事过又悲，须谨慎行"},
+{t:"第二十三签",p:"心猿意马未曾停\n雕弓挂月待风云\n劝君耐守今时事\n到底清平不用惊",l:"中",m:"心不宁静，耐守待时"},
+{t:"第二十四签",p:"千里姻缘一线牵\n佳人执板笑相迎\n莫待月圆才下手\n此时空隙好施为",l:"上",m:"姻缘前定，适时下手"},
+{t:"第二十五签",p:"南北东西事不同\n觉来闲事在心中\n不知抛却红尘事\n独把瑶琴月下弄",l:"中",m:"放下尘事，自得清净"},
+{t:"第二十六签",p:"运转贞元帮正佳\n时来令旦定无差\n从兹景物芳菲长\n深谷青松不染霞",l:"上",m:"时来运转，松柏长青"},
+{t:"第二十七签",p:"君今百事且随缘\n水到渠成听自然\n莫叹年来不如意\n喜逢新月再团圆",l:"中上",m:"水到渠成，喜逢团圆"},
+{t:"第二十八签",p:"鼓盆兴乐在其中\n野鬼奸神怕正容\n灾不灾时人不晓\n但看春色又逢春",l:"中",m:"正气压邪，春回大地"},
+{t:"第二十九签",p:"宝剑光芒出匣时\n恍然天地变璇玑\n从中请来无少碍\n再归玉殿喜生辉",l:"上上",m:"宝剑出匣，光辉再现"},
+{t:"第三十签",p:"宛如行入桃源洞\n闲花野草尽芬芳\n劝君须当心改求\n闲非闲事莫招忧",l:"上",m:"闲花野草，无忧无虑"},
+{t:"第三十一签",p:"事如逐鹿不知足\n何曾顷刻心安乐\n若能修省安己分\n何愁名利不到家",l:"中",m:"安分守己，名利自来"},
+{t:"第三十二签",p:"宛如行入桃源洞\n闲花野草尽芬芳\n劝君须当心改求\n那是非时自消殃",l:"中上",m:"桃源入境，是非自消"},
+{t:"第三十三签",p:"风云会合喜重重\n惊起鳌头第一峰\n定有高人来助手\n何愁宦海起狂波",l:"上",m:"贵人相助，何愁风波"},
+{t:"第三十四签",p:"行藏出入礼义恭\n言必忠良信可从\n必有高人来讲道\n天书初下日生辉",l:"上上",m:"忠信待人，天书降辉"},
+{t:"第三十五签",p:"佳人才子两相宜\n红日当空万象辉\n雨过天晴山色翠\n何愁富室不丰时",l:"上上",m:"佳人才子，雨过天晴"},
+{t:"第三十六签",p:"福如东海寿如山\n君尔何须叹苦甘\n自有太阳丕极泰\n门庭光耀喜重重",l:"上上",m:"福寿双全，否极泰来"},
+{t:"第三十七签",p:"莫笑愚人独力贫\n太公八十遇文君\n时来鱼跃龙门去\n一举登科四海闻",l:"上上",m:"太公八十，时来运至"},
+{t:"第三十八签",p:"事须问根叶\n车行历远山\n且把心安守\n求谋可逐全",l:"中",m:"安守本分，求谋可成"},
+{t:"第三十九签",p:"天边消息实难思\n平地风云不可期\n却笑棘中猴跳木\n不知笑里暗藏机",l:"中下",m:"风云莫测，笑里藏刀"},
+{t:"第四十签",p:"新月团圆映碧天\n问君此去定无缘\n且待交节时过后\n自然福至庆安全",l:"中",m:"待节过后，福至安全"},
+{t:"第四十一签",p:"龙虎相随在深山\n君今何用苦疑猜\n如今财禄完成就\n渐入唐尧禅舜年",l:"上",m:"龙虎相随，唐尧舜年"},
+{t:"第四十二签",p:"隐隐仙柯来降庭\n分明八语报佳音\n须知进退知成败\n何劳心下再沉吟",l:"中上",m:"仙柯降庭，知进退道"},
+{t:"第四十三签",p:"无相可相无火光\n人间天上一般般\n要知造化分明在\n只恐是非值岁寒",l:"中",m:"造化分明，恐遇岁寒"},
+{t:"第四十四签",p:"棋逢对手不知羞\n好似将军遇英雄\n宽心且看年终月\n管取花开百事逢",l:"中上",m:"棋逢对手，年终得意"},
+{t:"第四十五签",p:"温柔自古胜刚强\n积善之门大吉昌\n若是有人占此卦\n渐渐亨通福自强",l:"上",m:"温柔胜刚，积善吉昌"},
+{t:"第四十六签",p:"客中遇凶事难当\n自有福星来照临\n自起惊心鸿渐过\n自然忧化泰来时",l:"中上",m:"逢凶化吉，遇险呈祥"},
+{t:"第四十七签",p:"鸠饮山涧水鹞\n月黑风高将害人\n虽有惺惺几分意\n不知天理报应分",l:"下",m:"小人暗害，天理报应"},
+{t:"第四十八签",p:"五色祥云屋上飘\n门庭增彩定增高\n从今好事临门户\n咫尺青云志愿豪",l:"上上",m:"祥云缭绕，好事临门"},
+{t:"第四十九签",p:"言必忠良信可行\n只宜寂静莫纷更\n自然水到渠成长\n何必区区惹挂牵",l:"中上",m:"忠信行事，水到渠成"},
+{t:"第五十签",p:"春风初临百花开\n万物从此得新生\n但看交节秋月内\n管取亨通得成就",l:"上",m:"春风百开，交节亨通"},
+{t:"第五十一签",p:"求神问卜须诚意\n灵感临身百事通\n从兹渐渐求谋望\n玉汝于成贺太平",l:"上",m:"诚意求神，渐渐成就"},
+{t:"第五十二签",p:"忧愁常锁两眉间\n欲解愁眉始亦难\n忽报阳春行入户\n从兹喜气霭门栏",l:"中上",m:"愁眉渐展，喜气临门"},
+{t:"第五十三签",p:"贤臣圣主得相投\n法立如山不可收\n但教胸中存正气\n何愁天下不归周",l:"上",m:"君臣相投，天下归心"},
+{t:"第五十四签",p:"难得心平日渐稳\n安闲此际不须求\n吉人自有天相报\n笑看浮云空自飘",l:"中上",m:"心安理得，天相吉人"},
+{t:"第五十五签",p:"父母遗下财产多\n不知安乐又如何\n虽是金玉成富贵\n也须谨慎用心机",l:"中",m:"富贵也须谨慎用心"},
+{t:"第五十六签",p:"好花初绽遇狂风\n勿叹今朝事未通\n设若秋深霜雪至\n须教叶落又归根",l:"下",m:"好花遇风，叶落归根"},
+{t:"第五十七签",p:"事端出路莫追求\n旧事从新恐可忧\n只可偷闲随分过\n休生万事起无由",l:"中下",m:"莫追旧事，安分过日子"},
+{t:"第五十八签",p:"从前作事总糊涂\n见有危难受辛勤\n今日相逢方醒悟\n从今作事用心机",l:"中",m:"前事糊涂，今日醒悟"},
+{t:"第五十九签",p:"百年原是好姻缘\n谁料中间生波澜\n雨过天晴还又展\n桃花依旧笑春风",l:"中上",m:"好事多磨，终归圆满"},
+{t:"第六十签",p:"抱最一片太阳心\n不管浮云遮太空\n待到中秋月色好\n从兹渐渐到成功",l:"上",m:"守心不改，终见月明"},
+{t:"第六十一签",p:"风波忽起莫惊惶\n啸傲山林在正堂\n此身自有重阳日\n何愁不得到春光",l:"中上",m:"风波莫惊，终见春光"},
+{t:"第六十二签",p:"秉心正直莫胡为\n事到头时自不亏\n天然秋月连春花\n定有高人为解围",l:"上",m:"心正不亏，高人解围"},
+{t:"第六十三签",p:"物极必反理之常\n小人勿用恐忧惊\n如今但守当时事\n只待鸡鸣犬吠声",l:"中",m:"物极必反，守时待变"},
+{t:"第六十四签",p:"譬如困龙欲上天\n且待风云际会时\n终有升腾越海日\n不在旁人得志期",l:"中上",m:"困龙待时，终将升腾"},
+{t:"第六十五签",p:"生前作福天生善\n不是修德是何因\n总然富贵如花秀\n也恐荣华有尽时",l:"中",m:"修德积福，荣华有尽"},
+{t:"第六十六签",p:"路逢险处又难行\n远信传来事可惊\n莫谓风波交九难\n重重化吉保安宁",l:"中",m:"险处难行，化吉安宁"},
+{t:"第六十七签",p:"怪异忧危事不轻\n须求神佛保其身\n却将险境安心定\n自有春回万物新",l:"中",m:"求神安定，春回万物"},
+{t:"第六十八签",p:"船中明月半明时\n守旧安然可待期\n为问出行何日好\n中秋明月照归期",l:"中上",m:"守旧待时，中秋归期"},
+{t:"第六十九签",p:"事如逐鹿不知足\n何曾顷刻心安乐\n若能修省安己分\n那有闲非到尔屋",l:"中",m:"安己分则无是非"},
+{t:"第七十签",p:"乘马班如须进步\n一阳来复保安宁\n水边林下同相守\n那有风波到尔庭",l:"上",m:"一阳来复，水边安宁"},
+{t:"第七十一签",p:"谁知苍狗白云飞\n造化从兹不可期\n回首故乡音信远\n夕阳西下故人稀",l:"中下",m:"世事莫测，故人稀少"},
+{t:"第七十二签",p:"弄巧反成拙\n作福反得祸\n不如守本分\n平安过生活",l:"下",m:"弄巧成拙，守本分安"},
+{t:"第七十三签",p:"春雷震起屈蟠龙\n万里风云任卷舒\n一跃过禹门三级\n飞腾变化在须臾",l:"上上",m:"春雷惊龙，一跃龙门"},
+{t:"第七十四签",p:"似鸿飞冥冥\n乃得全其身\n事到全美处\n自有好人逢",l:"上",m:"鸿飞冥冥，终遇好人"},
+{t:"第七十五签",p:"急水滩头泛一舟\n且喜来到岸边头\n过去暗事都不见\n舟中又有一轮收",l:"中上",m:"险中得安，又有收获"},
+{t:"第七十六签",p:"何劳苦苦暗商量\n谋望之中巧中拙\n不如旧消息好\n水边林下好安身",l:"中",m:"不必苦谋，安身水边"},
+{t:"第七十七签",p:"梦中说梦获资财\n不知身外有身来\n若能修省存心正\n自有前程花共开",l:"中上",m:"修省存心，前程花开"},
+{t:"第七十八签",p:"事须问根叶\n车行历远山\n且把心安守\n渐入那不归",l:"中",m:"安心守分，渐入佳境"},
+{t:"第七十九签",p:"虚心请教问行藏\n前程无阻去路长\n只为坚守难为计\n守旧安然待好音",l:"中上",m:"虚心请教，守旧待音"},
+{t:"第八十签",p:"直上高山第一奇\n谁知此处有仙家\n炼金丹成飞升去\n玉皇端拱坐明堂",l:"上上",m:"仙家丹成，玉皇明堂"},
+{t:"第八十一签",p:"梧桐落叶惊秋至\n蟋蟀悲鸣月满庭\n若有君子知进退\n自然身守大吉昌",l:"中",m:"知进退者，自得吉昌"},
+{t:"第八十二签",p:"白云本是山中物\n随风飘荡到天边\n我本痴人无忧虑\n笑向桃花又一年",l:"中",m:"白云随风，无忧度日"},
+{t:"第八十三签",p:"岂可虚度过韶华\n一旦飘零到海涯\n回头方悔从前错\n光阴虚度等恒沙",l:"下",m:"莫虚度光阴，否则后悔"},
+{t:"第八十四签",p:"只因闲事笑谈间\n不知暗里起波澜\n如今且把心休歇\n自有安居不用忙",l:"中",m:"闲事生波，心歇安居"},
+{t:"第八十五签",p:"云中白鹤自翱翔\n万里青天一点光\n若问君家全盛事\n儿孙兴旺满堂华",l:"上上",m:"白鹤翱翔，儿孙满堂"},
+{t:"第八十六签",p:"春来花发映阳台\n万里车帆进取来\n进宝进财真吉庆\n家眷安宁大发财",l:"上上",m:"春花映台，进财吉庆"},
+{t:"第八十七签",p:"百花春至莺花舞\n拍手欣欣贺太平\n身伴君王多宠赐\n满门福禄自天成",l:"上上",m:"百花春至，天赐福禄"},
+{t:"第八十八签",p:"从来作事有人扶\n有事不成只暗图\n今日青龙入世位\n何愁宝物不珍图",l:"上",m:"有人相助，青龙入世"},
+{t:"第八十九签",p:"圣意分明有主张\n从兹天下不须忙\n佳人才子欢相合\n明月清风满画堂",l:"上上",m:"圣意分明，佳人相合"},
+{t:"第九十签",p:"忽朝一日天书降\n四海欢歌贺太平\n君有奇才施可用\n何愁功业不成名",l:"上上",m:"天书降临，功业成名"},
+{t:"第九十一签",p:"好事心中要守终\n何愁天下不从容\n前程有路通仙桂\n渐渐长安到九重",l:"上",m:"坚持好事，前程通桂"},
+{t:"第九十二签",p:"乃知乃信事方成\n若到秋深月再明\n凡事至期知进退\n何愁天下不回心",l:"中上",m:"知信息则事成"},
+{t:"第九十三签",p:"宽心且看月中桂\n正是中秋花正开\n花到中秋奇异常\n何愁不得到仙堂",l:"上",m:"中秋月桂，仙堂可期"},
+{t:"第九十四签",p:"天恩降下好几番\n事到头来不等闲\n若能修省安己分\n何愁不到玉门关",l:"上",m:"天恩降下，修己达标"},
+{t:"第九十五签",p:"改过前非向前行\n从兹好事得圆成\n作善百般天赐福\n自然通达利名声",l:"上",m:"改过从善，名声自达"},
+{t:"第九十六签",p:"贵人相逢在路旁\n有事相须两相帮\n只因方寸心无愧\n到处逢人皆吉祥",l:"上",m:"贵人路逢，心无愧则吉"},
+{t:"第九十七签",p:"江河风浪起青萍\n舟子愁眉未可行\n若待风平浪又静\n管取云中有路通",l:"中上",m:"风浪未平，待静通行"},
+{t:"第九十八签",p:"五服之内有亲情\n凡事商量得好音\n问水问山无不就\n管取亨通入宝林",l:"上",m:"亲族相助，亨通入林"},
+{t:"第九十九签",p:"行藏出入门庭光\n好事临门大吉昌\n更用福星添瑞气\n身安命稳保安康",l:"上",m:"门庭光耀，身安命稳"},
+{t:"第一百签",p:"我本天仙庵内人\n千年松柏又逢春\n若得此签非小可\n后望无穷百事遂",l:"上上",m:"千年松柏，百事如意"}
+];
+
+// 六十四卦 (n:名 s:符 d:辞 l:吉凶 m:解)
+const hexagrams=[
+{n:"乾为天",s:"䷀",d:"元亨利贞",l:"上上",m:"刚健中正，大有可为"},
+{n:"坤为地",s:"䷁",d:"元亨，利牝马之贞",l:"上",m:"厚德载物，柔顺为吉"},
+{n:"水雷屯",s:"䷂",d:"元亨利贞，勿用有攸往",l:"中下",m:"万事开头难，宜守不宜进"},
+{n:"山水蒙",s:"䷃",d:"亨，匪我求童蒙",l:"中",m:"启蒙教育，循序渐进"},
+{n:"水天需",s:"䷄",d:"有孚，光亨贞吉",l:"中上",m:"等待时机，光明在前"},
+{n:"天水讼",s:"䷅",d:"有孚窒惕，中吉终凶",l:"中下",m:"争讼不和，适可而止"},
+{n:"地水师",s:"䷆",d:"贞，丈人吉无咎",l:"中上",m:"兴师动众，需有德帅"},
+{n:"水地比",s:"䷇",d:"吉，原筮元永贞",l:"上",m:"亲比团结，辅佐得吉"},
+{n:"风天小畜",s:"䷈",d:"亨，密云不雨",l:"中",m:"小有蓄积，需耐心等待"},
+{n:"天泽履",s:"䷉",d:"履虎尾，不咥人，亨",l:"中上",m:"谨慎行事，虽有险无碍"},
+{n:"地天泰",s:"䷊",d:"小往大来，吉亨",l:"上上",m:"天地交泰，万事通达"},
+{n:"天地否",s:"䷋",d:"否之匪人，不利君子贞",l:"下",m:"天地不交，闭塞不通"},
+{n:"天火同人",s:"䷌",d:"同人于野，亨",l:"上",m:"与人和同，大公无私"},
+{n:"火天大有",s:"䷍",d:"元亨",l:"上上",m:"太阳当空，大有所获"},
+{n:"地山谦",s:"䷎",d:"亨，君子有终",l:"上",m:"谦虚退让，终得善果"},
+{n:"雷地豫",s:"䷏",d:"利建侯行师",l:"中上",m:"欢乐愉悦，顺势而为"},
+{n:"泽雷随",s:"䷐",d:"元亨利贞，无咎",l:"上",m:"随顺时势，无不吉利"},
+{n:"山风蛊",s:"䷑",d:"元亨，利涉大川",l:"中",m:"整治积弊，革新图治"},
+{n:"地泽临",s:"䷒",d:"元亨利贞，至于八月有凶",l:"中上",m:"居高临下，盛极须防衰"},
+{n:"风地观",s:"䷓",d:"盥而不荐，有孚颙若",l:"中上",m:"观察审视，以德服人"},
+{n:"火雷噬嗑",s:"䷔",d:"亨，利用狱",l:"中",m:"刑罚裁断，除障通达"},
+{n:"山火贲",s:"䷕",d:"亨，小利有攸往",l:"中",m:"文饰美化，适可而止"},
+{n:"山地剥",s:"䷖",d:"不利有攸往",l:"下",m:"剥落损耗，不宜行动"},
+{n:"地雷复",s:"䷗",d:"亨，出入无疾",l:"上",m:"一阳来复，否极泰来"},
+{n:"天雷无妄",s:"䷘",d:"元亨利贞，其匪正有眚",l:"中上",m:"顺其自然，不妄为则吉"},
+{n:"山天大畜",s:"䷙",d:"利贞，不家食吉",l:"上",m:"大有蓄积，出外吉利"},
+{n:"山雷颐",s:"䷚",d:"贞吉，观颐，自求口实",l:"中上",m:"养贤育德，自食其力"},
+{n:"泽风大过",s:"䷛",d:"栋桡，利有攸往，亨",l:"中下",m:"负担过重，量力而行"},
+{n:"坎为水",s:"䷜",d:"习坎，有孚维心亨",l:"下",m:"重险重重，诚心可渡"},
+{n:"离为火",s:"䷝",d:"利贞，亨，畜牝牛吉",l:"中上",m:"光明附丽，柔顺得吉"},
+{n:"泽山咸",s:"䷞",d:"亨，利贞，取女吉",l:"上",m:"感应交泰，姻缘和合"},
+{n:"雷风恒",s:"䷟",d:"亨，无咎，利贞",l:"中上",m:"恒久不变，持之以恒"},
+{n:"天山遁",s:"䷠",d:"亨，小利贞",l:"中",m:"退避隐遁，保全自身"},
+{n:"雷天大壮",s:"䷡",d:"利贞",l:"上",m:"刚强壮盛，守正则吉"},
+{n:"火地晋",s:"䷢",d:"康侯用锡马蕃庶",l:"上",m:"晋升明发，日进高升"},
+{n:"地火明夷",s:"䷣",d:"利艰贞",l:"中下",m:"光明受伤，韬光养晦"},
+{n:"风火家人",s:"䷤",d:"利女贞",l:"上",m:"家人和睦，内外有序"},
+{n:"火泽睽",s:"䷥",d:"小事吉",l:"中下",m:"乖违背离，小事可图"},
+{n:"水山蹇",s:"䷦",d:"利西南，不利东北",l:"下",m:"跋涉艰难，量力而行"},
+{n:"雷水解",s:"䷧",d:"利西南，无所往",l:"中上",m:"险难解除，春回大地"},
+{n:"山泽损",s:"䷨",d:"有孚，元吉无咎",l:"中",m:"减损下方，益于上方"},
+{n:"风雷益",s:"䷩",d:"利有攸往，利涉大川",l:"上",m:"损上益下，有所作为"},
+{n:"泽天夬",s:"䷪",d:"扬于王庭，孚号有厉",l:"中上",m:"决断果敢，防患未然"},
+{n:"天风姤",s:"䷫",d:"女壮，勿用取女",l:"中下",m:"不期而遇，不可轻信"},
+{n:"泽地萃",s:"䷬",d:"亨，王假有庙",l:"上",m:"聚集汇合，共图大业"},
+{n:"地风升",s:"䷭",d:"元亨，用见大人",l:"上",m:"步步高升，见贵得助"},
+{n:"泽水困",s:"䷮",d:"亨，贞，大人吉无咎",l:"中下",m:"困境重重，守正待时"},
+{n:"水风井",s:"䷯",d:"改邑不改井，无丧无得",l:"中",m:"养人利物，恒久不变"},
+{n:"泽火革",s:"䷰",d:"己日乃孚，元亨利贞",l:"中上",m:"变革旧制，顺天应人"},
+{n:"火风鼎",s:"䷱",d:"元吉，亨",l:"上上",m:"鼎新调和，大吉大利"},
+{n:"震为雷",s:"䷲",d:"亨，震来虩虩，笑言哑哑",l:"中",m:"震动惊惧，临危不乱"},
+{n:"艮为山",s:"䷳",d:"艮其背，不获其身",l:"中",m:"适时停止，静养安身"},
+{n:"风山渐",s:"䷴",d:"女归吉，利贞",l:"中上",m:"循序渐进，稳步发展"},
+{n:"雷泽归妹",s:"䷵",d:"征凶，无攸利",l:"下",m:"名不正言不顺，须守本分"},
+{n:"雷火丰",s:"䷶",d:"亨，王假之",l:"上",m:"丰盛充盈，盛极须防衰"},
+{n:"火山旅",s:"䷷",d:"小亨，旅贞吉",l:"中",m:"旅行在外，小心谨慎"},
+{n:"巽为风",s:"䷸",d:"小亨，利有攸往",l:"中",m:"谦逊顺从，柔得其宜"},
+{n:"兑为泽",s:"䷹",d:"亨，利贞",l:"中上",m:"喜悦和乐，以诚待人"},
+{n:"风水涣",s:"䷺",d:"亨，王假有庙",l:"中",m:"涣散离散，聚合人心"},
+{n:"水泽节",s:"䷻",d:"亨，苦节不可贞",l:"中",m:"适度节制，不可过度"},
+{n:"风泽中孚",s:"䷼",d:"豚鱼吉，利涉大川",l:"上",m:"诚信立身，可渡大川"},
+{n:"雷山小过",s:"䷽",d:"亨利贞，可小事不可大事",l:"中下",m:"小有过越，宜小不宜大"},
+{n:"水火既济",s:"䷾",d:"亨小，利贞，初吉终乱",l:"中上",m:"大功告成，须防后变"},
+{n:"火水未济",s:"䷿",d:"亨，小狐汔济，濡其尾",l:"中",m:"事业未成，需再努力"}
+];
+
+// 切换签/卦tab
+function switchDivineTab(mode){
+  divineMode=mode;
+  document.querySelectorAll('.divine-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===mode));
+  document.getElementById('divineSignPanel').style.display=mode==='sign'?'block':'none';
+  document.getElementById('divineCoinPanel').style.display=mode==='coin'?'block':'none';
+}
+
+function openDivineModal(){document.getElementById('divineModal').classList.add('show')}
+function closeDivineModal(){document.getElementById('divineModal').classList.remove('show')}
+
+// ===== 求签 =====
+function drawSign(){
+  const tube=document.getElementById('divineTube');
+  const btn=document.getElementById('btnDrawSign');
+  btn.disabled=true;btn.textContent='摇签中…';
+  tube.classList.add('shaking');
+  // 签筒音效
+  chantSound();
+  setTimeout(()=>{
+    tube.classList.remove('shaking');
+    const idx=Math.floor(Math.random()*100);
+    const sign=guanyinSigns[idx];
+    document.getElementById('signNum').textContent=sign.t+' · 第'+(idx+1)+'签';
+    document.getElementById('signTitle').textContent=sign.p.split('\n')[0].slice(0,7)+'…';
+    document.getElementById('signPoem').textContent=sign.p;
+    const lvEl=document.getElementById('signLevel');
+    lvEl.textContent=sign.l+'签';
+    lvEl.className='divine-level '+(sign.l.includes('上上')?'upper':(sign.l.includes('上')?'mid':(sign.l.includes('下下')?'lower':'mid')));
+    document.getElementById('signMeaning').textContent='解：'+sign.m;
+    document.getElementById('signResult').classList.add('show');
+    document.getElementById('signBtns').style.display='none';
+    document.getElementById('signAgainBtns').style.display='flex';
+    // 保存记录
+    const d=gd();const divs=d.divinations||[];
+    divs.unshift({type:'sign',num:idx+1,title:sign.t,level:sign.l,date:new Date().toLocaleDateString('zh-CN')});
+    d.divinations=divs;sd(d);
+    // 莲花动画
+    showLotus();
+  },1500);
+}
+
+function resetSign(){
+  document.getElementById('signResult').classList.remove('show');
+  document.getElementById('signAgainBtns').style.display='none';
+  document.getElementById('signBtns').style.display='flex';
+  const btn=document.getElementById('btnDrawSign');
+  btn.disabled=false;btn.textContent='摇 签';
+}
+
+// ===== 摇卦 =====
+let coinTossCount=0;
+let yaoResults=[]; // 六爻结果
+
+function tossCoin(){
+  if(coinTossCount>=6)return;
+  const btn=document.getElementById('btnTossCoin');
+  btn.disabled=true;btn.textContent='摇卦中…';
+  const coins=[document.getElementById('coin1'),document.getElementById('coin2'),document.getElementById('coin3')];
+  coins.forEach(c=>c.classList.add('flipping'));
+  // 摇卦音效
+  const ctx=getAudio();const t=ctx.currentTime;
+  [523,659,784].forEach((f,i)=>{
+    const osc=ctx.createOscillator();const gain=ctx.createGain();
+    osc.type='triangle';osc.frequency.setValueAtTime(f,t+i*0.05);
+    gain.gain.setValueAtTime(0.06,t+i*0.05);gain.gain.exponentialRampToValueAtTime(0.001,t+i*0.05+0.3);
+    osc.connect(gain);gain.connect(ctx.destination);osc.start(t+i*0.05);osc.stop(t+i*0.05+0.3);
+  });
+  setTimeout(()=>{
+    coins.forEach(c=>c.classList.remove('flipping'));
+    // 三枚铜钱，正面(字)为阴=2，反面(背)为阳=3
+    // 两阳一阴 = 少阴 (7) 静
+    // 两阴一阳 = 少阳 (8) 静
+    // 三阳 = 老阳 (9) 动变阴
+    // 三阴 = 老阴 (6) 动变阳
+    let yangCount=0;
+    let coinChars=[];
+    coins.forEach((c,i)=>{
+      const isYang=Math.random()>0.5;
+      if(isYang)yangCount++;
+      coinChars.push(isYang?'字':'背');
+      c.querySelector('.coin-char').textContent=isYang?'字':'背';
+    });
+    // 显示本次三钱结果
+    const rr=document.getElementById('coinResultRow');
+    const cr=document.createElement('div');
+    cr.className='coin-result';
+    coins.forEach(c=>{
+      const isYang=c.querySelector('.coin-char').textContent==='字';
+      cr.classList.add(isYang?'yang':'yin');
+    });
+    // 简单显示
+    let yaoType;
+    if(yangCount===3){yaoType={type:'oldYang',val:'老阳 ○',symbol:'yang'};coinTossCount}
+    else if(yangCount===2){yaoType={type:'youngYin',val:'少阴 ╸',symbol:'broken'}}
+    else if(yangCount===1){yaoType={type:'youngYang',val:'少阳 ━',symbol:'yang'}}
+    else{yaoType={type:'oldYin',val:'老阴 ✕',symbol:'broken'}}
+    yaoResults.push({...yaoType,coins:coinChars});
+    renderYaoLines();
+    coinTossCount++;
+    if(coinTossCount>=6){
+      // 解卦
+      setTimeout(()=>interpretHexagram(),300);
+    }else{
+      btn.disabled=false;
+      btn.textContent='摇卦（'+coinTossCount+'/6）';
+    }
+  },500);
+}
+
+function renderYaoLines(){
+  const container=document.getElementById('yaoLines');
+  const labels=['初爻','二爻','三爻','四爻','五爻','上爻'];
+  container.innerHTML='';
+  for(let i=5;i>=0;i--){
+    const row=document.createElement('div');
+    row.className='yao-row'+(i<yaoResults.length?' active':'');
+    const label=document.createElement('div');
+    label.className='yao-label';
+    label.textContent=labels[i];
+    row.appendChild(label);
+    const bar=document.createElement('div');
+    bar.className='yao-bar';
+    if(i<yaoResults.length){
+      const yao=yaoResults[i];
+      if(yao.symbol==='yang'){
+        const seg=document.createElement('div');seg.className='yao-seg';seg.style.width='50px';bar.appendChild(seg);
+      }else{
+        const seg1=document.createElement('div');seg1.className='yao-seg broken';seg1.style.width='22px';bar.appendChild(seg1);
+        const gap=document.createElement('div');gap.style.width='6px';bar.appendChild(gap);
+        const seg2=document.createElement('div');seg2.className='yao-seg broken';seg2.style.width='22px';bar.appendChild(seg2);
+      }
+      // 动爻标记
+      if(yao.type==='oldYang'||yao.type==='oldYin'){
+        const mark=document.createElement('span');
+        mark.style.cssText='font-size:10px;color:var(--gold);margin-left:4px';
+        mark.textContent=yao.type==='oldYang'?'○':'✕';
+        row.appendChild(mark);
+      }
+    }else{
+      const seg=document.createElement('div');seg.className='yao-seg';seg.style.opacity='0.15';seg.style.width='50px';bar.appendChild(seg);
+    }
+    row.appendChild(bar);
+    container.appendChild(row);
+  }
+}
+
+function interpretHexagram(){
+  // 从下到上排列六爻，构建卦象
+  // 阳=1, 阴=0
+  let binary='';
+  for(let i=0;i<6;i++){
+    binary+=(yaoResults[i].symbol==='yang')?'1':'0';
+  }
+  // 转换为卦序（上卦+下卦）
+  // 下卦：初爻~三爻，上卦：四爻~上爻
+  const lowerMap={'111':0,'110':1,'101':2,'100':3,'011':4,'010':5,'001':6,'000':7}; // 乾兑离震巽坎艮坤
+  const lower=lowerMap[binary.slice(0,3)];
+  const upper=lowerMap[binary.slice(3,6)];
+  // 64卦索引 = 上卦*8 + 下卦
+  const hexIdx=upper*8+lower;
+  const hex=hexagrams[hexIdx];
+  // 显示结果
+  document.getElementById('hexName').textContent=hex.s+' '+hex.n;
+  document.getElementById('hexSymbol').textContent=hex.d;
+  document.getElementById('hexDesc').textContent='卦意：'+hex.m;
+  const lvEl=document.getElementById('hexLevel');
+  lvEl.textContent=hex.l;
+  lvEl.className='divine-level '+(hex.l.includes('上上')?'upper':(hex.l.includes('上')?'mid':(hex.l.includes('下')?'lower':'mid')));
+  // 动爻解
+  let movingYao='';
+  yaoResults.forEach((y,i)=>{
+    if(y.type==='oldYang')movingYao+=(i+1)+'爻动(阳变阴)；';
+    if(y.type==='oldYin')movingYao+=(i+1)+'爻动(阴变阳)；';
+  });
+  document.getElementById('hexMeaning').textContent=(movingYao?'变卦提示：'+movingYao+'\n':'')+'吉凶：'+hex.l+' ｜ 建议：'+hex.m;
+  document.getElementById('coinResult').classList.add('show');
+  document.getElementById('coinBtns').style.display='none';
+  document.getElementById('coinAgainBtns').style.display='flex';
+  showLotus();
+  // 保存记录
+  const d=gd();const divs=d.divinations||[];
+  divs.unshift({type:'coin',hexagram:hex.n,symbol:hex.s,date:new Date().toLocaleDateString('zh-CN')});
+  d.divinations=divs;sd(d);
+}
+
+function resetCoin(){
+  coinTossCount=0;yaoResults=[];
+  document.getElementById('coinResult').classList.remove('show');
+  document.getElementById('coinAgainBtns').style.display='none';
+  document.getElementById('coinBtns').style.display='flex';
+  const btn=document.getElementById('btnTossCoin');
+  btn.disabled=false;btn.textContent='摇 卦';
+  document.getElementById('coinResultRow').innerHTML='';
+  renderYaoLines();
+  // 重置铜钱字
+  document.getElementById('coin1').querySelector('.coin-char').textContent='乾';
+  document.getElementById('coin2').querySelector('.coin-char').textContent='坤';
+  document.getElementById('coin3').querySelector('.coin-char').textContent='易';
+}
 
 // ===== 初始化 =====
 initWishTypes();initLampBuddhas();initDust();initFestivalBar();restoreMusic();
